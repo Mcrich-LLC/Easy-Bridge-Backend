@@ -9,14 +9,22 @@ import Foundation
 import Vapor
 import VaporCron
 
-struct BridgeFetchEvery5MinJob: VaporCronSchedulable {
+struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
     typealias T = Void
     
-    static var expression: String { "*/5 * * * *" } // every 5 minutes
+    static var expression: String { "*/5 * * * * *" } // every 5 seconds
 
     static func task(on application: Application) -> EventLoopFuture<Void> {
         print("ComplexJob start")
-        let bridgeIDs: [String : String] = [:]
+        let bridgeIDs: [
+            String : String] = ["Ballard Bridge" : "85c3d66a-b103-49ab-aa8b-26d153600d19",
+            "1 Ave S Bridge" : "cc1a77e6-2b93-4781-849a-a9c794a2c1ec",
+            "University Bridge" : "e4d0e7f3-db3e-42c7-9009-d42af978c4e3",
+            "South Park Bridge" : "65c163b6-8b32-477a-b292-69ab0bcefc15",
+            "Spokane St Swing Bridge" : "52ca4452-2bbd-4c48-b456-c6fcb33fc0b1",
+            "Montlake Bridge" : "8e12ea9b-7f86-4940-becf-2ad8c09787f6",
+            "Fremont Bridge" : "d6e22016-407f-494b-b11b-63458ad1210f"
+        ]
         let bridgeFetch = TwitterFetch()
         var bridgesUsed: [Bridge] = []
         bridgeFetch.fetchTweet { response in
@@ -30,70 +38,38 @@ struct BridgeFetchEvery5MinJob: VaporCronSchedulable {
                             bridge.name == name
                         }) {
                             func updateBridge(bridge: Bridge) {
-                                print("update \(bridge.name)")
-                                // declare the parameter as a dictionary that contains string as key and value combination. considering inputs are valid
-                                  
-                                let parameters: [String: Any] = ["name": bridge.name, "status": bridge.status.rawValue]
-                                  
-                                  // create the url with URL
-                                  let url = URL(string: "localhost:8080/bridges")! // change server url accordingly
-                                  
-                                  // create the session object
-                                  let session = URLSession.shared
-                                  
-                                  // now create the URLRequest object using the url object
-                                  var request = URLRequest(url: url)
-                                  request.httpMethod = "POST" //set http method as POST
-                                  
-                                  // add headers for the request
-                                  request.addValue("application/json", forHTTPHeaderField: "Content-Type") // change as per server requirements
-                                  request.addValue("application/json", forHTTPHeaderField: "Accept")
-                                  
-                                  do {
-                                    // convert parameters to Data and assign dictionary to httpBody of request
-                                    request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
-                                  } catch let error {
-                                    print(error.localizedDescription)
-                                    return
-                                  }
-                                  
-                                  // create dataTask using the session object to send data to the server
-                                  let task = session.dataTask(with: request) { data, response, error in
-                                    
+                                let url = URL(string: "http://localhost:8080/bridges")!
+
+                                var request = URLRequest(url: url)
+                                request.httpMethod = "PUT"
+                                request.allHTTPHeaderFields = [
+                                    "Content-Type": "application/json",
+                                    "Accept": "application/json"
+                                ]
+                                let jsonDictionary: [String: String] = [
+                                    "id": bridgeIDs[bridge.name] ?? "",
+                                    "name": bridge.name,
+                                    "status": bridge.status.rawValue
+                                ]
+                                
+                                let data = try! JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
+                                URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
                                     if let error = error {
-                                      print("Post Request Error: \(error.localizedDescription)")
-                                      return
+                                        print("Error making PUT request: \(error.localizedDescription)")
+                                        return
                                     }
                                     
-                                    // ensure there is valid response code returned from this HTTP response
-                                    guard let httpResponse = response as? HTTPURLResponse,
-                                          (200...299).contains(httpResponse.statusCode)
-                                    else {
-                                      print("Invalid Response received from the server")
-                                      return
+                                    if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
+                                        guard responseCode == 200 else {
+                                            print("Invalid response code: \(responseCode)")
+                                            return
+                                        }
+                                        
+                                        if let responseJSONData = try? JSONSerialization.jsonObject(with: responseData, options: .allowFragments) {
+                                            print("Response JSON data = \(responseJSONData)")
+                                        }
                                     }
-                                    
-                                    // ensure there is data returned
-                                    guard let responseData = data else {
-                                      print("nil Data received from the server")
-                                      return
-                                    }
-                                    
-                                    do {
-                                      // create json object from data or use JSONDecoder to convert to Model stuct
-                                      if let jsonResponse = try JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any] {
-                                        print(jsonResponse)
-                                        // handle json response
-                                      } else {
-                                        print("data maybe corrupted or in wrong format")
-                                        throw URLError(.badServerResponse)
-                                      }
-                                    } catch let error {
-                                      print(error.localizedDescription)
-                                    }
-                                  }
-                                  // perform the task
-//                                  task.resume()
+                                }.resume()
                             }
                             if tweet.text.lowercased().contains("opened to traffic") {
                                 let bridge = Bridge(name: name, status: .down)
@@ -144,81 +120,6 @@ struct BridgeFetchEvery5MinJob: VaporCronSchedulable {
         }
     }
 }
-
-//class BridgeFetch {
-//    var bridgesUsed: [Bridge] = []
-//    var tweets: [Tweet] = [] {
-//        didSet {
-//            for tweet in tweets {
-//                print("tweet.text = \(tweet.text)")
-//                func addBridge(name: String) {
-////                    print("name = \(name)")
-//                    if !bridgesUsed.contains(where: { bridge in
-//                        bridge.name == name
-//                    }) {
-//                        if tweet.text.lowercased().contains("opened to traffic") {
-//                            let bridge = Bridge(name: name, status: .down)
-//                            bridgesUsed.append(bridge)
-//                            updateBridge(bridge: bridge)
-//                        } else if tweet.text.lowercased().contains("maintenance") {
-//                            if tweet.text.lowercased().contains("finished") {
-//                                let bridge = Bridge(name: name, status: .down)
-//                                bridgesUsed.append(bridge)
-//                                updateBridge(bridge: bridge)
-//                            } else {
-//                                let bridge = Bridge(name: name, status: .maintenance)
-//                                bridgesUsed.append(bridge)
-//                                updateBridge(bridge: bridge)
-//                            }
-//                        } else {
-//                            let bridge = Bridge(name: name, status: .up)
-//                            bridgesUsed.append(bridge)
-//                            updateBridge(bridge: bridge)
-//                        }
-//                    }
-//                }
-//                switch tweet.text {
-//                case let str where str.contains("Ballard Bridge"):
-//                    addBridge(name: "Ballard Bridge")
-//                case let str where str.contains("Fremont Bridge"):
-//                    addBridge(name: "Fremont Bridge")
-//                case let str where str.contains("Montlake Bridge"):
-//                    addBridge(name: "Montlake Bridge")
-//                case let str where str.contains("Spokane St Swing Bridge"):
-//                    addBridge(name: "Spokane St Swing Bridge")
-//                case let str where str.contains("South Park Bridge"):
-//                    addBridge(name: "South Park Bridge")
-//                case let str where str.contains("University Bridge"):
-//                    addBridge(name: "University Bridge")
-//                case let str where str.contains("1 Ave S Bridge"):
-//                    addBridge(name: "1 Ave S Bridge")
-//                default:
-//                    break
-//                }
-//            }
-//        }
-//    }
-//    func fetchData() {
-//        let dataFetch = TwitterFetch()
-//        print("Start data fetch")
-//        DispatchQueue.main.async {
-//            dataFetch.fetchTweet { response in
-//                switch response {
-//                case .success(let response):
-//                    DispatchQueue.main.async {
-//                        self.tweets = response.data
-//                    }
-//                case .failure(let error):
-//                    print("error = \(error)")
-//                }
-//                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
-//                    self.fetchData()
-//                }
-//            }
-//        }
-//    }
-//
-//}
 struct Bridge: Identifiable, Hashable {
     let id = UUID()
     let name: String

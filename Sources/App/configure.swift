@@ -7,7 +7,7 @@ import VaporCron
 public func configure(_ app: Application) throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-    let twitterBridgeFetch = try app.cron.schedule(BridgeFetchEvery5MinJob.self)
+    let twitterBridgeFetch = try app.cron.schedule(BridgeFetchEvery5SecJob.self)
     
 
     app.databases.use(.postgres(
