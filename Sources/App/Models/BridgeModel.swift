@@ -13,7 +13,7 @@ final class BridgeModel: Model, Content {
     static let schema = "bridges"
     
     @ID(key: .id)
-    var id: UUID?
+    var id: String?
     
     @Field(key: "name")
     var name: String
