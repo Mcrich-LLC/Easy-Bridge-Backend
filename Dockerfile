@@ -46,9 +46,9 @@ FROM ubuntu:focal
 
 # Make sure all system packages are up to date, and install only essential packages.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
-    && apt-get -q update \
-    && apt-get -q dist-upgrade -y \
-    && apt-get -q install -y \
+    && apt-get update \
+    && apt-get dist-upgrade -y \
+    && apt-get install -y \
       ca-certificates \
       tzdata \
 # If your app or its dependencies import FoundationNetworking, also install `libcurl4`.
