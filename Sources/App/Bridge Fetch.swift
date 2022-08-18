@@ -8,6 +8,9 @@
 import Foundation
 import Vapor
 import VaporCron
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
     typealias T = Void
