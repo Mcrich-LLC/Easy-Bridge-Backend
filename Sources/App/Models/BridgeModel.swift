@@ -12,8 +12,8 @@ import Foundation
 final class BridgeModel: Model, Content {
     static let schema = "bridges"
     
-    @ID(key: .id)
-    var id: String?
+    @ID()
+    var id: UUID?
     
     @Field(key: "name")
     var name: String
@@ -22,7 +22,7 @@ final class BridgeModel: Model, Content {
     
     init() {}
     
-    init(id:String? = nil, name: String, status: String) {
+    init(id:UUID? = nil, name: String, status: String) {
         self.id = id
         self.name = name
         self.status = status

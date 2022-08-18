@@ -47,7 +47,8 @@ struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
                                 request.httpMethod = "PUT"
                                 request.allHTTPHeaderFields = [
                                     "Content-Type": "application/json",
-                                    "Accept": "application/json"
+                                    "Accept": "application/json",
+                                    "Authorization": "Bearer y8r7U6kyvINlswPyxATXScB2wZQpCAuOUf0uWu8PEct0AvnJrQj7HZlmfQ3mhAJvKv3A5qk3Kiu1mtIjnKMiKQJdiyzfda0WUCTD"
                                 ]
                                 let jsonDictionary: [String: String] = [
                                     "id": bridgeIDs[bridge.name] ?? "",
