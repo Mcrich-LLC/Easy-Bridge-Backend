@@ -67,8 +67,8 @@ services:
       - db_data:/var/lib/postgresql/data/pgdata
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_USER: Mcrich
-      POSTGRES_PASSWORD: SDOTbridgeTrackingSucks
+      POSTGRES_USER: vapor_username
+      POSTGRES_PASSWORD: vapor_password
       POSTGRES_DB: vapor_database
     ports:
       - '5432:5432'
