@@ -22,7 +22,7 @@ final class BridgeModel: Model, Content {
     
     init() {}
     
-    init(id:UUID? = nil, name: String, status: String) {
+    init(id:String? = nil, name: String, status: String) {
         self.id = id
         self.name = name
         self.status = status
