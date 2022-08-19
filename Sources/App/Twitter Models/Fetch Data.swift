@@ -22,7 +22,7 @@ class TwitterFetch {
             var request = URLRequest(url: URL(string: "https://api.twitter.com/2/users/2768116808/tweets")!,
                                      timeoutInterval: Double.infinity)
             
-            request.addValue("Bearer \(Secrets.bearerToken)", forHTTPHeaderField: "Authorization")
+            request.addValue("Bearer \(Secrets.twitterBearerToken)", forHTTPHeaderField: "Authorization")
             
             request.httpMethod = "GET"
             
