@@ -12,7 +12,7 @@ import Foundation
 final class BridgeModel: Model, Content {
     static let schema = "bridges"
     
-    @ID()
+    @ID(key: .id)
     var id: UUID?
     
     @Field(key: "name")
