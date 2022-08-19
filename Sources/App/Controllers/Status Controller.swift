@@ -39,6 +39,10 @@ struct BridgeController: RouteCollection {
                 .unwrap(or: Abort(.notFound))
                 .flatMap {
                     $0.status = bridge.status
+                    $0.maps_url = bridge.maps_url
+                    $0.address = bridge.address
+                    $0.latitude = bridge.latitude
+                    $0.longitude = bridge.longitude
                     return $0.update(on: req.db).transform(to: .ok)
                 }
         } else {

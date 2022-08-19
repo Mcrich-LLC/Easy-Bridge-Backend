@@ -13,6 +13,10 @@ struct UpdateStatus: Migration {
             .id()
             .field("name", .string, .required)
             .field("status", .string, .required)
+            .field("maps_url", .string, .required)
+            .field("address", .string, .required)
+            .field("latitude", .double, .required)
+            .field("longitude", .double, .required)
             .create()
     }
     func revert(on database: Database) -> EventLoopFuture<Void> {
