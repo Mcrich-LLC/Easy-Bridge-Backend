@@ -15,5 +15,6 @@
 * Setup the [Secrets.swift file](#setting-up-secrets)
 
 ## Setting Up Secrets
-* Once you have your API key, create a new file called `Secrets.swift` in the brain-marks directory of the project, by typing `touch Secrets.swift` in Terminal
+* Create an API key for vapor to update itself and also get one from [twitter](developer.twitter.com)
+* Once you have your API keys, create a new file called `Secrets.swift` in the Seattle-Bridge-Backend directory of the project, by typing `touch Secrets.swift` in Terminal
 * Use the file `Secrets-Example.swift` as the format for your Secrets.swift file. Paste your API key into the `bearerToken` property
