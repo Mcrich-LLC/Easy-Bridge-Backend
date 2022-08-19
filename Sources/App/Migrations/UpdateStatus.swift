@@ -13,6 +13,7 @@ struct UpdateStatus: Migration {
             .id()
             .field("name", .string, .required)
             .field("status", .string, .required)
+            .field("image_url", .string, .required)
             .field("maps_url", .string, .required)
             .field("address", .string, .required)
             .field("latitude", .double, .required)

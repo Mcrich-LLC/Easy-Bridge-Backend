@@ -23,7 +23,7 @@ struct BridgeController: RouteCollection {
     
     func create(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         let bridge = try req.content.decode(BridgeModel.self)
-        if req.headers.bearerAuthorization?.token == "y8r7U6kyvINlswPyxATXScB2wZQpCAuOUf0uWu8PEct0AvnJrQj7HZlmfQ3mhAJvKv3A5qk3Kiu1mtIjnKMiKQJdiyzfda0WUCTD" {
+        if req.headers.bearerAuthorization?.token == Secrets.editBearerToken {
         return bridge.save(on: req.db).transform(to: .ok)
         } else {
             return req.eventLoop.makeFailedFuture(Abort(.unauthorized))
