@@ -53,7 +53,11 @@ struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
                                 let jsonDictionary: [String: String] = [
                                     "id": bridgeIDs[bridge.name] ?? "",
                                     "name": bridge.name,
-                                    "status": bridge.status.rawValue
+                                    "status": bridge.status.rawValue,
+                                    "maps_url" : "",
+                                    "address" : "",
+                                    "latitude" : Doubl(0),
+                                    "longitude" : Double(0)
                                 ]
                                 
                                 let data = try! JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
