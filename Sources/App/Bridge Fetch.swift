@@ -54,6 +54,7 @@ struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
                                     "id": bridgeIDs[bridge.name] ?? "",
                                     "name": bridge.name,
                                     "status": bridge.status.rawValue,
+//                                    "image_url" : "",
                                     "maps_url" : "",
                                     "address" : "",
                                     "latitude" : Double(0),
