@@ -57,7 +57,7 @@ struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
                                 ]
                                 
                                 let data = try! JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
-                                URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
+                                let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
                                     if let error = error {
                                         print("Error making PUT request: \(error.localizedDescription)")
                                         return
@@ -73,7 +73,8 @@ struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
                                             print("Response JSON data = \(responseJSONData)")
                                         }
                                     }
-                                }.resume()
+                                }
+                                task.resume()
                             }
                             if tweet.text.lowercased().contains("opened to traffic") {
                                 let bridge = Bridge(name: name, status: .down)
