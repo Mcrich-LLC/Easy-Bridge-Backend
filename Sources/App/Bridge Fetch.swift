@@ -50,7 +50,7 @@ struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
                                     "Accept": "application/json",
                                     "Authorization": "Bearer y8r7U6kyvINlswPyxATXScB2wZQpCAuOUf0uWu8PEct0AvnJrQj7HZlmfQ3mhAJvKv3A5qk3Kiu1mtIjnKMiKQJdiyzfda0WUCTD"
                                 ]
-                                let jsonDictionary: [String: String] = [
+                                let jsonDictionary: [String: Any] = [
                                     "id": bridgeIDs[bridge.name] ?? "",
                                     "name": bridge.name,
                                     "status": bridge.status.rawValue,
