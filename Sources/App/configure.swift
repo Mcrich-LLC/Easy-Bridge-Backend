@@ -26,6 +26,7 @@ public func configure(_ app: Application) throws {
     
     app.migrations.add(UpdateStatus())
     if app.environment == .development {
+        //try app.autoRevert().wait()
         try app.autoMigrate().wait()
     }
     // register routes
