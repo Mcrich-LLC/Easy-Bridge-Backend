@@ -1,5 +1,7 @@
 # Seattle-Bridge-Backend
 
+Check out the full app: [Easy Bridge Tracker](https://github.com/Mcrich23/Easy-Bridge-Tracker)
+
 ## Contributing
 
 ## Start Here
