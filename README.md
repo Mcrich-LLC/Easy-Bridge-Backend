@@ -6,7 +6,7 @@
 * Fork the repo to your profile
 * Clone to your computer
 
-`git clone https://github.com/mikaelacaron/brain-marks && cd brain-marks`
+`git clone https://github.com/Mcrich23/Easy-Bridge-Backend.git && cd Easy-Bridge-Backend`
 
 * Setup the upstream remote
 
