@@ -20,7 +20,7 @@ let package = Package(
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "Vapor", package: "vapor"),
-                "VaporCron"
+                .product(name: "VaporCron", package: "VaporCron")
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of
