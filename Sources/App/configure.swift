@@ -8,7 +8,7 @@ public func configure(_ app: Application) throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     
-    let twitterBridgeFetch = try app.cron.schedule(BridgeFetchEvery5SecJob.self)
+//    let twitterBridgeFetch = try app.cron.schedule(BridgeFetchEvery5SecJob.self)
     
     if let databaseURL = Environment.get("DATABASE_URL"), var postgresConfig = PostgresConfiguration(url: databaseURL) {
         postgresConfig.tlsConfiguration = .makeClientConfiguration()
@@ -31,4 +31,13 @@ public func configure(_ app: Application) throws {
     }
     // register routes
     try routes(app)
+    app.eventLoopGroup.next().scheduleRepeatedTask(initialDelay: .seconds(0), delay: .seconds(10)) { _ in
+        Task {
+            do {
+                BridgeFetchEvery5SecJob.task(on: app)
+            } catch {
+                app.logger.warning("Got error when updating entry")
+            }
+        }
+    }
 }
