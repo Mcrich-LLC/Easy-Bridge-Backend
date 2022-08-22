@@ -31,13 +31,4 @@ public func configure(_ app: Application) throws {
     }
     // register routes
     try routes(app)
-    app.eventLoopGroup.next().scheduleRepeatedTask(initialDelay: .seconds(0), delay: .seconds(10)) { _ in
-        Task {
-            do {
-                BridgeFetchEvery5SecJob.task(on: app)
-            } catch {
-                app.logger.warning("Got error when updating entry")
-            }
-        }
-    }
 }
