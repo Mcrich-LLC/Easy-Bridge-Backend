@@ -16,5 +16,10 @@ func routes(_ app: Application) throws {
         return "Updating Database"
     }
     
+    app.post("update-bridges") { req async -> HTTPStatus in
+        BridgeFetch.fetchTweets()
+        return .accepted
+    }
+    
     try app.register(collection: BridgeController())
 }
