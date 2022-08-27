@@ -10,5 +10,11 @@ func routes(_ app: Application) throws {
         "Hello, world!"
     }
     
+    app.get("update-bridges") { req async -> String in
+        //Getting automatically called by IFTTT
+        BridgeFetch.fetchTweets()
+        return "Updating Database"
+    }
+    
     try app.register(collection: BridgeController())
 }

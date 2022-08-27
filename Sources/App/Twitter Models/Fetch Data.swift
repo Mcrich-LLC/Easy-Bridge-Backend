@@ -16,10 +16,10 @@ enum HttpError: Error {
 }
 
 class TwitterFetch {
-    func fetchTweet(completion: @escaping (Result<Response, Error>) -> Void) {
+    func fetchTweet(id: String, completion: @escaping (Result<Response, Error>) -> Void) {
         do {
             print("started twitter fetch")
-            var request = URLRequest(url: URL(string: "https://api.twitter.com/2/users/2768116808/tweets")!,
+            var request = URLRequest(url: URL(string: "https://api.twitter.com/2/users/\(id)/tweets")!,
                                      timeoutInterval: Double.infinity)
             
             request.addValue("Bearer \(Secrets.twitterBearerToken)", forHTTPHeaderField: "Authorization")
