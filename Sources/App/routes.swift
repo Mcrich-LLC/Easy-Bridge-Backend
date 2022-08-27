@@ -10,15 +10,24 @@ func routes(_ app: Application) throws {
         "Hello, world!"
     }
     
-    app.get("update-bridges") { req async -> String in
+    app.get("update-bridges") { req async -> HTTPStatus in
         //Getting automatically called by IFTTT
-        BridgeFetch.fetchTweets()
-        return "Updating Database"
+        if req.headers.bearerAuthorization?.token == Secrets.editBearerToken {
+            BridgeFetch.fetchTweets()
+            return .accepted
+        } else {
+            return .forbidden
+        }
     }
     
     app.post("update-bridges") { req async -> HTTPStatus in
-        BridgeFetch.fetchTweets()
-        return .accepted
+        //Getting automatically called by IFTTT
+        if req.headers.bearerAuthorization?.token == Secrets.editBearerToken {
+            BridgeFetch.fetchTweets()
+            return .accepted
+        } else {
+            return .forbidden
+        }
     }
     
     try app.register(collection: BridgeController())
