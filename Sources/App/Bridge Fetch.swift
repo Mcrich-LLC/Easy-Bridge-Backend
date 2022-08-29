@@ -104,31 +104,34 @@ struct BridgeFetch {
         }
     }
     
+    static func handleBridge(text: String) {
+        switch text {
+        case let str where str.contains("Ballard Bridge"):
+            BridgeFetch.addBridge(text: text, name: "Ballard Bridge")
+        case let str where str.contains("Fremont Bridge"):
+            BridgeFetch.addBridge(text: text, name: "Fremont Bridge")
+        case let str where str.contains("Montlake Bridge"):
+            BridgeFetch.addBridge(text: text, name: "Montlake Bridge")
+        case let str where str.contains("Spokane St Swing Bridge"):
+            BridgeFetch.addBridge(text: text, name: "Spokane St Swing Bridge")
+        case let str where str.contains("South Park Bridge"):
+            BridgeFetch.addBridge(text: text, name: "South Park Bridge")
+        case let str where str.contains("University Bridge"):
+            BridgeFetch.addBridge(text: text, name: "University Bridge")
+        case let str where str.contains("1 Ave S Bridge"):
+            BridgeFetch.addBridge(text: text, name: "1 Ave S Bridge")
+        default:
+            break
+        }
+    }
+    
     static func fetchTweets() {
-        let bridgeFetch = TwitterFetch()
-        bridgeFetch.fetchTweet(id: "2768116808") { response in
+        TwitterFetch.shared.fetchTweet(id: "2768116808") { response in
             switch response {
             case .success(let response):
                 for tweet in response.data {
                     print("tweet.text = \(tweet.text)")
-                    switch tweet.text {
-                    case let str where str.contains("Ballard Bridge"):
-                        BridgeFetch.addBridge(text: tweet.text, name: "Ballard Bridge")
-                    case let str where str.contains("Fremont Bridge"):
-                        BridgeFetch.addBridge(text: tweet.text, name: "Fremont Bridge")
-                    case let str where str.contains("Montlake Bridge"):
-                        BridgeFetch.addBridge(text: tweet.text, name: "Montlake Bridge")
-                    case let str where str.contains("Spokane St Swing Bridge"):
-                        BridgeFetch.addBridge(text: tweet.text, name: "Spokane St Swing Bridge")
-                    case let str where str.contains("South Park Bridge"):
-                        BridgeFetch.addBridge(text: tweet.text, name: "South Park Bridge")
-                    case let str where str.contains("University Bridge"):
-                        BridgeFetch.addBridge(text: tweet.text, name: "University Bridge")
-                    case let str where str.contains("1 Ave S Bridge"):
-                        BridgeFetch.addBridge(text: tweet.text, name: "1 Ave S Bridge")
-                    default:
-                        break
-                    }
+                    BridgeFetch.handleBridge(text: tweet.text)
                 }
             case .failure(let error):
                 print("error = \(error)")
