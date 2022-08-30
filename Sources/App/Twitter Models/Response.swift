@@ -11,3 +11,8 @@ struct Response: Codable {
     let data: [Tweet]
     let meta: Metadata
 }
+
+struct StreamResponse: Codable {
+    let data: Tweet
+    let matchingRules: [MatchingRules]
+}

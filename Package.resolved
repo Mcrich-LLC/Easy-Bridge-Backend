@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "alamofire",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Alamofire/Alamofire",
-      "state" : {
-        "revision" : "8dd85aee02e39dd280c75eef88ffdb86eed4b07b",
-        "version" : "5.6.2"
-      }
-    },
-    {
       "identity" : "async-http-client",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server/async-http-client.git",
@@ -241,6 +232,15 @@
       "state" : {
         "revision" : "0a5bc04095a675662cf24757cc0640aa2204253b",
         "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "twitterapikit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mironal/TwitterAPIKit",
+      "state" : {
+        "revision" : "4c6810d7c0351f9810da1563103303fec82c0e86",
+        "version" : "0.2.2"
       }
     },
     {

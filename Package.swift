@@ -11,7 +11,8 @@ let package = Package(
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
-        .package(url: "https://github.com/MihaelIsaev/VaporCron", from: "2.6.0")
+        .package(url: "https://github.com/MihaelIsaev/VaporCron", from: "2.6.0"),
+        .package(url: "https://github.com/mironal/TwitterAPIKit", from: "0.2.2")
     ],
     targets: [
         .target(
@@ -20,7 +21,8 @@ let package = Package(
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "Vapor", package: "vapor"),
-                .product(name: "VaporCron", package: "VaporCron")
+                .product(name: "VaporCron", package: "VaporCron"),
+                .product(name: "TwitterAPIKit", package: "TwitterAPIKit")
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

@@ -118,7 +118,7 @@ struct BridgeFetch {
             BridgeFetch.addBridge(text: text, name: "South Park Bridge")
         case let str where str.contains("University Bridge"):
             BridgeFetch.addBridge(text: text, name: "University Bridge")
-        case let str where str.contains("1 Ave S Bridge"):
+        case let str where str.contains("1st Ave S Bridge"):
             BridgeFetch.addBridge(text: text, name: "1 Ave S Bridge")
         default:
             break
@@ -133,6 +133,17 @@ struct BridgeFetch {
                     print("tweet.text = \(tweet.text)")
                     BridgeFetch.handleBridge(text: tweet.text)
                 }
+            case .failure(let error):
+                print("error = \(error)")
+            }
+        }
+    }
+    
+    static func streamTweets() {
+        TwitterFetch.shared.startStream { response in
+            switch response {
+            case .success(let response):
+                BridgeFetch.handleBridge(text: response.data.text)
             case .failure(let error):
                 print("error = \(error)")
             }

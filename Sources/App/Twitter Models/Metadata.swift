@@ -14,3 +14,7 @@ struct Metadata: Codable {
     let newestId: String
     let oldestId: String
 }
+struct MatchingRules: Codable {
+    let id: String
+    let tag: String
+}
