@@ -10,7 +10,7 @@ func routes(_ app: Application) throws {
         "Hello, world!"
     }
     
-    app.get("update-bridges") { req async -> HTTPStatus in
+    app.get("force-update-bridges") { req async -> HTTPStatus in
         //Getting automatically called by IFTTT
         if req.headers.bearerAuthorization?.token == Secrets.editBearerToken {
             BridgeFetch.fetchTweets()
@@ -20,7 +20,7 @@ func routes(_ app: Application) throws {
         }
     }
     
-    app.post("update-bridges") { req async -> HTTPStatus in
+    app.post("force-update-bridges") { req async -> HTTPStatus in
         //Getting automatically called by IFTTT
         if req.headers.bearerAuthorization?.token == Secrets.editBearerToken {
             BridgeFetch.fetchTweets()
