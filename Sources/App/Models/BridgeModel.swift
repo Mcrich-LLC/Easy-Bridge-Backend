@@ -29,10 +29,12 @@ final class BridgeModel: Model, Content {
     var latitude: Double
     @Field(key: "longitude")
     var longitude: Double
+    @Field(key: "bridge_location")
+    var bridge_location: String
     
     init() {}
     
-    init(id:UUID? = nil, name: String, image_url: String, status: String, maps_url: String, address: String, latitude: Double, longitude: Double) {
+    init(id:UUID? = nil, name: String, image_url: String, status: String, maps_url: String, address: String, latitude: Double, longitude: Double, bridge_location: String) {
         self.id = id
         self.name = name
         self.status = status
@@ -41,5 +43,6 @@ final class BridgeModel: Model, Content {
         self.latitude = latitude
         self.longitude = longitude
         self.image_url = image_url
+        self.bridge_location = bridge_location
     }
 }

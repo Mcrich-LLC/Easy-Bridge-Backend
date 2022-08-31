@@ -18,6 +18,7 @@ struct UpdateStatus: Migration {
             .field("address", .string, .required)
             .field("latitude", .double, .required)
             .field("longitude", .double, .required)
+            .field("bridge_location", .string, .required)
             .create()
     }
     func revert(on database: Database) -> EventLoopFuture<Void> {
