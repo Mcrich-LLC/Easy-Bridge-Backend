@@ -53,7 +53,8 @@ struct BridgeFetch {
                 "maps_url" : "",
                 "address" : "",
                 "latitude" : Double(0),
-                "longitude" : Double(0)
+                "longitude" : Double(0),
+                "bridge_location" : ""
             ]
             
             let data = try! JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
