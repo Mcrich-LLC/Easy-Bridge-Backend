@@ -127,6 +127,7 @@ struct BridgeFetch {
     }
     
     static func fetchTweets() {
+        print("fetch tweets")
         TwitterFetch.shared.fetchTweet(id: "2768116808") { response in
             switch response {
             case .success(let response):
