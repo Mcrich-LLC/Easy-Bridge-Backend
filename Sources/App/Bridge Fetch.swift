@@ -79,27 +79,27 @@ struct BridgeFetch {
         }
     
     static func addBridge(text: String, name: String) {
-        var seattleBidgesUsed: [Bridge] = []
-        if !seattleBidgesUsed.contains(where: { bridge in
+        var seattleBridgesUsed: [Bridge] = []
+        if !seattleBridgesUsed.contains(where: { bridge in
             bridge.name == name
         }) {
             if text.lowercased().contains("opened to traffic") {
                 let bridge = Bridge(name: name, status: .down)
-                seattleBidgesUsed.append(bridge)
+                seattleBridgesUsed.append(bridge)
                 BridgeFetch.updateBridge(bridge: bridge)
             } else if text.lowercased().contains("maintenance") {
                 if text.lowercased().contains("finished") {
                     let bridge = Bridge(name: name, status: .down)
-                    seattleBidgesUsed.append(bridge)
+                    seattleBridgesUsed.append(bridge)
                     BridgeFetch.updateBridge(bridge: bridge)
                 } else {
                     let bridge = Bridge(name: name, status: .maintenance)
-                    seattleBidgesUsed.append(bridge)
+                    seattleBridgesUsed.append(bridge)
                     BridgeFetch.updateBridge(bridge: bridge)
                 }
             } else {
                 let bridge = Bridge(name: name, status: .up)
-                seattleBidgesUsed.append(bridge)
+                seattleBridgesUsed.append(bridge)
                 BridgeFetch.updateBridge(bridge: bridge)
             }
         }
