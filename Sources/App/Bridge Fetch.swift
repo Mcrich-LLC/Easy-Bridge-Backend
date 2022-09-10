@@ -143,6 +143,7 @@ struct BridgeFetch {
     }
     
     static func streamTweets() {
+        print("start stream")
         TwitterFetch.shared.startStream { response in
             switch response {
             case .success(let response):
