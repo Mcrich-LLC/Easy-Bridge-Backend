@@ -11,5 +11,13 @@ import Foundation
 
 enum SecretsExample {
     static let twitterbearerToken = "paste-your-twitter-api-key-here-and-replace-this-string--example: aaaaaaapapppppiiiiiiiiiKeeeeeeeeyyyyyyyyy"
-    static let editBearerToken = "internal-bearer-token-to-update-database-*you*-come-up-with-this"
+    static let internalEditBearerToken = "internal-bearer-token-to-update-database-*you*-come-up-with-this"
+    
+    static func authorizeToken(token: String?) -> Bool {
+        if token == internalEditBearerToken {
+            return true
+        } else {
+            return false
+        }
+    }
 }

@@ -23,7 +23,7 @@ struct BridgeController: RouteCollection {
     
     func create(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         let bridge = try req.content.decode(BridgeModel.self)
-        if req.headers.bearerAuthorization?.token == Secrets.editBearerToken {
+        if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
         return bridge.save(on: req.db).transform(to: .ok)
         } else {
             return req.eventLoop.makeFailedFuture(Abort(.unauthorized))
@@ -33,7 +33,9 @@ struct BridgeController: RouteCollection {
     // PUT Request /bridge routes
     func update(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         let bridge = try req.content.decode(BridgeModel.self)
-        if req.headers.bearerAuthorization?.token == Secrets.editBearerToken {
+        
+        
+        if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
         
         return BridgeModel.find(bridge.id, on: req.db)
                 .unwrap(or: Abort(.notFound))

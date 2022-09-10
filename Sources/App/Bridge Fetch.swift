@@ -43,7 +43,7 @@ struct BridgeFetch {
             request.allHTTPHeaderFields = [
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "Authorization": "Bearer \(Secrets.editBearerToken)"
+                "Authorization": "Bearer \(Secrets.internalEditBearerToken)"
             ]
             let jsonDictionary: [String: Any] = [
                 "id": seattleBridgeIDs[bridge.name] ?? "",
