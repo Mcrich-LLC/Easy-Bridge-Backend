@@ -77,9 +77,9 @@ struct BridgeFetch {
             }
             task.resume()
         }
+    static var seattleBridgesUsed: [Bridge] = []
     
     static func addBridge(text: String, name: String) {
-        var seattleBridgesUsed: [Bridge] = []
         if !seattleBridgesUsed.contains(where: { bridge in
             bridge.name == name
         }) {
@@ -127,6 +127,7 @@ struct BridgeFetch {
     }
     
     static func fetchTweets() {
+        BridgeFetch.seattleBridgesUsed.removeAll()
         print("fetch tweets")
         TwitterFetch.shared.fetchTweet(id: "2768116808") { response in
             switch response {
