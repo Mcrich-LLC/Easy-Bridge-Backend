@@ -148,6 +148,7 @@ struct BridgeFetch {
         TwitterFetch.shared.startStream { response in
             switch response {
             case .success(let response):
+                BridgeFetch.seattleBridgesUsed.removeAll()
                 BridgeFetch.handleBridge(text: response.data.text)
             case .failure(let error):
                 print("error = \(error)")
