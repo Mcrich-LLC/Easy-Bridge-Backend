@@ -27,6 +27,7 @@ import FoundationNetworking
 //}
 struct BridgeFetch {
         static func updateBridge(bridge: Bridge) {
+            print("update \(bridge)")
             let seattleBridgeIDs: [
                 String : String] = ["Ballard Bridge" : "85c3d66a-b103-49ab-aa8b-26d153600d19",
                 "1 Ave S Bridge" : "cc1a77e6-2b93-4781-849a-a9c794a2c1ec",
