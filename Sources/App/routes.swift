@@ -11,7 +11,6 @@ func routes(_ app: Application) throws {
     }
     
     app.get("force-update-bridges") { req async -> HTTPStatus in
-        //Getting automatically called by IFTTT
         print("fetch tweets")
         if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
             BridgeFetch.fetchTweets()
@@ -22,10 +21,27 @@ func routes(_ app: Application) throws {
     }
     
     app.post("force-update-bridges") { req async -> HTTPStatus in
-        //Getting automatically called by IFTTT
         print("fetch tweet call")
         if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
             BridgeFetch.fetchTweets()
+            return .accepted
+        } else {
+            return .forbidden
+        }
+    }
+    
+    app.get("start-stream") { req async -> HTTPStatus in
+        if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
+            BridgeFetch.streamTweets()
+            return .accepted
+        } else {
+            return .forbidden
+        }
+    }
+    
+    app.post("start-stream") { req async -> HTTPStatus in
+        if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
+            BridgeFetch.streamTweets()
             return .accepted
         } else {
             return .forbidden
