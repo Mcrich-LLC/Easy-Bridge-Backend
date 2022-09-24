@@ -11,6 +11,7 @@ import VaporCron
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
+import FluentKit
 
 //struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
 //    typealias T = Void
@@ -26,8 +27,11 @@ import FoundationNetworking
 //    }
 //}
 struct BridgeFetch {
-        static func updateBridge(bridge: Bridge) {
+    static func updateBridge(bridge: Bridge, db: Database) {
             print("update \(bridge)")
+        BridgeModel().update(on: db).whenComplete { result in
+            print("completed")
+        }
             let seattleBridgeIDs: [
                 String : String] = ["Ballard Bridge" : "85c3d66a-b103-49ab-aa8b-26d153600d19",
                 "1 Ave S Bridge" : "cc1a77e6-2b93-4781-849a-a9c794a2c1ec",
@@ -76,58 +80,58 @@ struct BridgeFetch {
                     }
                 }
             }
-            task.resume()
+//            task.resume()
         }
     static var seattleBridgesUsed: [Bridge] = []
     
-    static func addBridge(text: String, name: String) {
+    static func addBridge(text: String, name: String, db: Database) {
         if !seattleBridgesUsed.contains(where: { bridge in
             bridge.name == name
         }) {
             if text.lowercased().contains("opened to traffic") {
                 let bridge = Bridge(name: name, status: .down)
                 seattleBridgesUsed.append(bridge)
-                BridgeFetch.updateBridge(bridge: bridge)
+                BridgeFetch.updateBridge(bridge: bridge, db: db)
             } else if text.lowercased().contains("maintenance") {
                 if text.lowercased().contains("finished") {
                     let bridge = Bridge(name: name, status: .down)
                     seattleBridgesUsed.append(bridge)
-                    BridgeFetch.updateBridge(bridge: bridge)
+                    BridgeFetch.updateBridge(bridge: bridge, db: db)
                 } else {
                     let bridge = Bridge(name: name, status: .maintenance)
                     seattleBridgesUsed.append(bridge)
-                    BridgeFetch.updateBridge(bridge: bridge)
+                    BridgeFetch.updateBridge(bridge: bridge, db: db)
                 }
             } else {
                 let bridge = Bridge(name: name, status: .up)
                 seattleBridgesUsed.append(bridge)
-                BridgeFetch.updateBridge(bridge: bridge)
+                BridgeFetch.updateBridge(bridge: bridge, db: db)
             }
         }
     }
     
-    static func handleBridge(text: String) {
+    static func handleBridge(text: String, db: Database) {
         switch text {
         case let str where str.contains("Ballard Bridge"):
-            BridgeFetch.addBridge(text: text, name: "Ballard Bridge")
+            BridgeFetch.addBridge(text: text, name: "Ballard Bridge", db: db)
         case let str where str.contains("Fremont Bridge"):
-            BridgeFetch.addBridge(text: text, name: "Fremont Bridge")
+            BridgeFetch.addBridge(text: text, name: "Fremont Bridge", db: db)
         case let str where str.contains("Montlake Bridge"):
-            BridgeFetch.addBridge(text: text, name: "Montlake Bridge")
+            BridgeFetch.addBridge(text: text, name: "Montlake Bridge", db: db)
         case let str where str.contains("Lower Spokane St Swing Bridge"):
-            BridgeFetch.addBridge(text: text, name: "Spokane St Swing Bridge")
+            BridgeFetch.addBridge(text: text, name: "Spokane St Swing Bridge", db: db)
         case let str where str.contains("South Park Bridge"):
-            BridgeFetch.addBridge(text: text, name: "South Park Bridge")
+            BridgeFetch.addBridge(text: text, name: "South Park Bridge", db: db)
         case let str where str.contains("University Bridge"):
-            BridgeFetch.addBridge(text: text, name: "University Bridge")
+            BridgeFetch.addBridge(text: text, name: "University Bridge", db: db)
         case let str where str.contains("1st Ave S Bridge"):
-            BridgeFetch.addBridge(text: text, name: "1 Ave S Bridge")
+            BridgeFetch.addBridge(text: text, name: "1 Ave S Bridge", db: db)
         default:
             break
         }
     }
     
-    static func fetchTweets() {
+    static func fetchTweets(db: Database) {
         BridgeFetch.seattleBridgesUsed.removeAll()
         print("fetch tweets")
         TwitterFetch.shared.fetchTweet(id: "2768116808") { response in
@@ -135,7 +139,7 @@ struct BridgeFetch {
             case .success(let response):
                 for tweet in response.data {
                     print("tweet.text = \(tweet.text)")
-                    BridgeFetch.handleBridge(text: tweet.text)
+                    BridgeFetch.handleBridge(text: tweet.text, db: db)
                 }
             case .failure(let error):
                 print("error = \(error)")
@@ -143,13 +147,13 @@ struct BridgeFetch {
         }
     }
     
-    static func streamTweets() {
+    static func streamTweets(db: Database) {
         print("start stream")
         TwitterFetch.shared.startStream { response in
             switch response {
             case .success(let response):
                 BridgeFetch.seattleBridgesUsed.removeAll()
-                BridgeFetch.handleBridge(text: response.data.text)
+                BridgeFetch.handleBridge(text: response.data.text, db: db)
             case .failure(let error):
                 print("error = \(error)")
             }

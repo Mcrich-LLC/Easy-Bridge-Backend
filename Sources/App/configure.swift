@@ -33,7 +33,7 @@ public func configure(_ app: Application) throws {
     try routes(app)
     
     Task {
-        BridgeFetch.fetchTweets()
-        BridgeFetch.streamTweets()
+        BridgeFetch.fetchTweets(db: app.db)
+        BridgeFetch.streamTweets(db: app.db)
     }
 }

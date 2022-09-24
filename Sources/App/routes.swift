@@ -13,7 +13,7 @@ func routes(_ app: Application) throws {
     app.get("force-update-bridges") { req async -> HTTPStatus in
         print("fetch tweets")
         if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
-            BridgeFetch.fetchTweets()
+            BridgeFetch.fetchTweets(db: req.db)
             return .accepted
         } else {
             return .forbidden
@@ -23,7 +23,7 @@ func routes(_ app: Application) throws {
     app.post("force-update-bridges") { req async -> HTTPStatus in
         print("fetch tweet call")
         if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
-            BridgeFetch.fetchTweets()
+            BridgeFetch.fetchTweets(db: req.db)
             return .accepted
         } else {
             return .forbidden
@@ -32,7 +32,7 @@ func routes(_ app: Application) throws {
     
     app.get("start-stream") { req async -> HTTPStatus in
         if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
-            BridgeFetch.streamTweets()
+            BridgeFetch.streamTweets(db: req.db)
             return .accepted
         } else {
             return .forbidden
@@ -41,7 +41,7 @@ func routes(_ app: Application) throws {
     
     app.post("start-stream") { req async -> HTTPStatus in
         if Secrets.authorizeToken(token: req.headers.bearerAuthorization?.token) {
-            BridgeFetch.streamTweets()
+            BridgeFetch.streamTweets(db: req.db)
             return .accepted
         } else {
             return .forbidden
