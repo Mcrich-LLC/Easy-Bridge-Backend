@@ -29,9 +29,6 @@ import FluentKit
 struct BridgeFetch {
     static func updateBridge(bridge: Bridge, db: Database) {
             print("update \(bridge)")
-        BridgeModel().update(on: db).whenComplete { result in
-            print("completed")
-        }
             let seattleBridgeIDs: [
                 String : String] = ["Ballard Bridge" : "85c3d66a-b103-49ab-aa8b-26d153600d19",
                 "1 Ave S Bridge" : "cc1a77e6-2b93-4781-849a-a9c794a2c1ec",
@@ -80,7 +77,7 @@ struct BridgeFetch {
                     }
                 }
             }
-//            task.resume()
+            task.resume()
         }
     static var seattleBridgesUsed: [Bridge] = []
     
