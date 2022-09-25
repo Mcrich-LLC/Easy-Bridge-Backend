@@ -13,19 +13,19 @@ import FoundationNetworking
 #endif
 import FluentKit
 
-//struct BridgeFetchEvery5SecJob: VaporCronSchedulable {
-//    typealias T = Void
-//    
-//    static var expression: String { "*/5 * * * * *" } // every 5 seconds
-//
-//    static func task(on application: Application) -> EventLoopFuture<Void> {
-//        print("ComplexJob start")
-//        BridgeFetch.fetchTweets()
-//        return application.eventLoopGroup.future().always { _ in
-//            print("ComplexJob fired")
-//        }
-//    }
-//}
+struct BridgeCheckStreamEveryMinuteJob: VaporCronSchedulable {
+    typealias T = Void
+    
+    static var expression: String { "*/1 * * * *" } // every 1 minutes
+
+    static func task(on application: Application) -> EventLoopFuture<Void> {
+        print("ComplexJob start")
+        BridgeFetch.streamTweets(db: application.db)
+        return application.eventLoopGroup.future().always { _ in
+            print("ComplexJob fired")
+        }
+    }
+}
 struct BridgeFetch {
     static func updateBridge(bridge: Bridge, db: Database) {
             print("update \(bridge)")

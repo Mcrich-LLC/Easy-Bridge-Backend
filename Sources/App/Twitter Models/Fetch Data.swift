@@ -23,28 +23,22 @@ class TwitterFetch {
     let client = TwitterAPIClient(.bearer(Secrets.twitterBearerToken))
     let searchStreamRequest = GetTweetsSearchStreamRequestV2()
     func startStream(completion: @escaping (Result<StreamResponse, Error>) -> Void) {
-        func startStream() {
-            client.v2.stream.searchStream(searchStreamRequest).streamResponse(queue: .global(qos: .default)) { response in
-                if (200 ... 299) ~= response.response?.statusCode ?? 0 {
-                    do {
-                        let jsonDecoder = JSONDecoder()
-                        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
-                        let result = try jsonDecoder.decode(StreamResponse.self, from: (response.data ?? response.prettyString.toJSON())!)
-                        print("streamed \(result)")
-                        completion(.success(result))
-                    } catch {
-                        print("error, unable to decode stream")
-                    }
-                } else {
-                    completion(.failure(HttpError.badResponse))
-                    print("❌ Status code is \(String(describing: response.response?.statusCode))")
+        client.v2.stream.searchStream(searchStreamRequest).streamResponse(queue: .global(qos: .default)) { response in
+            if (200 ... 299) ~= response.response?.statusCode ?? 0 {
+                do {
+                    let jsonDecoder = JSONDecoder()
+                    jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
+                    let result = try jsonDecoder.decode(StreamResponse.self, from: (response.data ?? response.prettyString.toJSON())!)
+                    print("streamed \(result)")
+                    completion(.success(result))
+                } catch {
+                    print("error, unable to decode stream")
                 }
+            } else {
+                completion(.failure(HttpError.badResponse))
+                print("❌ Status code is \(String(describing: response.response?.statusCode))")
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
-                startStream()
-            })
         }
-        startStream()
     }
     func stopStream() {
         client.v2.stream.searchStream(searchStreamRequest).cancel()
