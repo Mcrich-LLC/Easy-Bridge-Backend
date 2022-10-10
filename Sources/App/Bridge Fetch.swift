@@ -16,7 +16,7 @@ import FluentKit
 struct BridgeCheckStreamEveryMinuteJob: VaporCronSchedulable {
     typealias T = Void
     
-    static var expression: String { "*/1 * * * *" } // every 1 minutes
+    static var expression: String { "*/1 * * * * *" } // every second
 
     static func task(on application: Application) -> EventLoopFuture<Void> {
         print("ComplexJob start")
