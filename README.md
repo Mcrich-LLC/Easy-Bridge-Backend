@@ -1,5 +1,7 @@
 # Easy-Bridge-Backend
 
+The backend for the iOS app Easy Bridge Tracker.
+
 Check out the full app: [Easy Bridge Tracker](https://github.com/Mcrich23/Easy-Bridge-Tracker)
 
 ## Using The Database
