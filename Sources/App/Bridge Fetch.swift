@@ -28,27 +28,22 @@ struct BridgeCheckStreamEveryMinuteJob: VaporCronSchedulable {
 }
 struct BridgeFetch {
     static func updateBridge(bridge: Bridge, db: Database) {
-            print("update \(bridge)")
-            let seattleBridgeIDs: [
-                String : String] = ["Ballard Bridge" : "85c3d66a-b103-49ab-aa8b-26d153600d19",
-                "1 Ave S Bridge" : "cc1a77e6-2b93-4781-849a-a9c794a2c1ec",
-                "University Bridge" : "e4d0e7f3-db3e-42c7-9009-d42af978c4e3",
-                "South Park Bridge" : "65c163b6-8b32-477a-b292-69ab0bcefc15",
-                "Spokane St Swing Bridge" : "52ca4452-2bbd-4c48-b456-c6fcb33fc0b1",
-                "Montlake Bridge" : "8e12ea9b-7f86-4940-becf-2ad8c09787f6",
-                "Fremont Bridge" : "d6e22016-407f-494b-b11b-63458ad1210f"
-            ]
+        getBridgeInDb(db: db) { bridges in
             let url = URL(string: "http://localhost:8080/bridges")!
 
             var request = URLRequest(url: url)
-            request.httpMethod = "PUT"
-            request.allHTTPHeaderFields = [
+        request.httpMethod = "PUT"
+        request.allHTTPHeaderFields = [
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "Authorization": "Bearer \(Secrets.internalEditBearerToken)"
             ]
+            let updateBridge = bridges.first { bridgeResponse in
+                bridgeResponse.name == bridge.name
+            }
+            print("updateBridge = \(updateBridge)")
             let jsonDictionary: [String: Any] = [
-                "id": seattleBridgeIDs[bridge.name] ?? "",
+                "id": updateBridge?.id ?? "",
                 "name": bridge.name,
                 "status": bridge.status.rawValue,
                 "image_url" : "",
@@ -58,7 +53,7 @@ struct BridgeFetch {
                 "longitude" : Double(0),
                 "bridge_location" : ""
             ]
-            
+            print("jsonDict = \(jsonDictionary)")
             let data = try! JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
             let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
                 if let error = error {
@@ -77,31 +72,67 @@ struct BridgeFetch {
                     }
                 }
             }
-            task.resume()
+        task.resume()
         }
-    static var seattleBridgesUsed: [Bridge] = []
+    }
+    static func getBridgeInDb(db: Database, completion: @escaping ([BridgeResponse]) -> Void) {
+        var request = URLRequest(url: URL(string: "http://localhost:8080/bridges")!,
+                                 timeoutInterval: Double.infinity)
+        
+        request.addValue("Bearer \(Secrets.twitterBearerToken)", forHTTPHeaderField: "Authorization")
+        
+        request.httpMethod = "GET"
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard error == nil else {
+                return
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                guard (200 ... 299) ~= response.statusCode else {
+                    print("❌ Status code is \(response.statusCode)")
+                    return
+                }
+                
+                guard let data = data else {
+                    return
+                }
+                
+                do {
+                    let jsonDecoder = JSONDecoder()
+                    jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
+                    let bridges = try jsonDecoder.decode([BridgeResponse].self, from: data)
+                    print("result = \(bridges)")
+                    completion(bridges)
+                } catch {
+                }
+            }
+        }
+        task.resume()
+        }
+    static var bridgesUsed: [Bridge] = []
     
     static func addBridge(text: String, name: String, db: Database) {
-        if !seattleBridgesUsed.contains(where: { bridge in
+        if !bridgesUsed.contains(where: { bridge in
             bridge.name == name
         }) {
             if text.lowercased().contains("opened to traffic") {
                 let bridge = Bridge(name: name, status: .down)
-                seattleBridgesUsed.append(bridge)
+                bridgesUsed.append(bridge)
                 BridgeFetch.updateBridge(bridge: bridge, db: db)
             } else if text.lowercased().contains("maintenance") {
                 if text.lowercased().contains("finished") {
                     let bridge = Bridge(name: name, status: .down)
-                    seattleBridgesUsed.append(bridge)
+                    bridgesUsed.append(bridge)
                     BridgeFetch.updateBridge(bridge: bridge, db: db)
                 } else {
                     let bridge = Bridge(name: name, status: .maintenance)
-                    seattleBridgesUsed.append(bridge)
+                    bridgesUsed.append(bridge)
                     BridgeFetch.updateBridge(bridge: bridge, db: db)
                 }
             } else {
                 let bridge = Bridge(name: name, status: .up)
-                seattleBridgesUsed.append(bridge)
+                bridgesUsed.append(bridge)
                 BridgeFetch.updateBridge(bridge: bridge, db: db)
             }
         }
@@ -129,7 +160,7 @@ struct BridgeFetch {
     }
     
     static func fetchTweets(db: Database) {
-        BridgeFetch.seattleBridgesUsed.removeAll()
+        BridgeFetch.bridgesUsed.removeAll()
         print("fetch tweets")
         TwitterFetch.shared.fetchTweet(id: "2768116808") { response in
             switch response {
@@ -149,7 +180,7 @@ struct BridgeFetch {
         TwitterFetch.shared.startStream { response in
             switch response {
             case .success(let response):
-                BridgeFetch.seattleBridgesUsed.removeAll()
+                BridgeFetch.bridgesUsed.removeAll()
                 BridgeFetch.handleBridge(text: response.data.text, db: db)
             case .failure(let error):
                 print("error = \(error)")
@@ -166,4 +197,15 @@ enum BridgeStatus: String {
     case up
     case down
     case maintenance
+}
+struct BridgeResponse: Identifiable, Hashable, Codable {
+    let id: String
+    let name: String
+    let status: String
+    let imageUrl: String
+    let mapsUrl: String
+    let address: String
+    let latitude: Double
+    let longitude: Double
+    let bridgeLocation: String
 }
