@@ -146,7 +146,7 @@ struct BridgeFetch {
             BridgeFetch.addBridge(text: text, name: "Fremont Bridge", db: db)
         case let str where str.contains("Montlake Bridge"):
             BridgeFetch.addBridge(text: text, name: "Montlake Bridge", db: db)
-        case let str where str.contains("Lower Spokane St Swing Bridge"):
+        case let str where str.contains("Lower Spokane St Bridge"):
             BridgeFetch.addBridge(text: text, name: "Spokane St Swing Bridge", db: db)
         case let str where str.contains("South Park Bridge"):
             BridgeFetch.addBridge(text: text, name: "South Park Bridge", db: db)
