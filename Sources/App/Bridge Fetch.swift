@@ -116,8 +116,8 @@ struct BridgeFetch {
         if !bridgesUsed.contains(where: { bridge in
             bridge.name == name
         }) {
-            if text.lowercased().contains("opened to traffic") {
-                let bridge = Bridge(name: name, status: .down)
+            if text.lowercased().contains("closed") {
+                let bridge = Bridge(name: name, status: .up)
                 bridgesUsed.append(bridge)
                 BridgeFetch.updateBridge(bridge: bridge, db: db)
             } else if text.lowercased().contains("maintenance") {
@@ -131,7 +131,7 @@ struct BridgeFetch {
                     BridgeFetch.updateBridge(bridge: bridge, db: db)
                 }
             } else {
-                let bridge = Bridge(name: name, status: .up)
+                let bridge = Bridge(name: name, status: .down)
                 bridgesUsed.append(bridge)
                 BridgeFetch.updateBridge(bridge: bridge, db: db)
             }
