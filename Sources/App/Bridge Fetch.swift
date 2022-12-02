@@ -27,6 +27,45 @@ struct BridgeCheckStreamEveryMinuteJob: VaporCronSchedulable {
     }
 }
 struct BridgeFetch {
+    static func postBridgeNotification(bridge: Bridge, bridgeDetails: BridgeResponse) {
+        let url = URL(string: "https://fcm.googleapis.com/fcm/send")!
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "Post"
+        request.allHTTPHeaderFields = [
+            "Content-Type": "application/json",
+            "Authorization": "Bearer \(Secrets.firebaseCloudMessagingBearerToken)"
+        ]
+        let bridgeName = "\(bridgeDetails.bridgeLocation)_\(bridge.name)".replacingOccurrences(of: " Bridge", with: "").replacingOccurrences(of: ",", with: "").replacingOccurrences(of: "st", with: "").replacingOccurrences(of: "nd", with: "").replacingOccurrences(of: "3rd", with: "").replacingOccurrences(of: "th", with: "").replacingOccurrences(of: " ", with: "_")
+        let message = """
+        {
+          "to": "/topics/\(bridgeName)",
+          "notification": {
+            "title": "\(bridgeDetails.bridgeLocation)",
+            "body": "\(bridge.name.capitalized) is now \(bridge.status.rawValue)"
+          }
+        }
+        """
+        let data = try! JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
+        let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
+            if let error = error {
+                print("Error making Post request: \(error.localizedDescription)")
+                return
+            }
+            
+            if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
+                guard responseCode == 200 else {
+                    print("Invalid Firebase response code: \(responseCode)")
+                    return
+                }
+                
+                if let responseJSONData = try? JSONSerialization.jsonObject(with: responseData, options: .allowFragments) {
+                    print("Firebase Response JSON data = \(responseJSONData)")
+                }
+            }
+        }
+        task.resume()
+    }
     static func updateBridge(bridge: Bridge, db: Database) {
         getBridgeInDb(db: db) { bridges in
             let url = URL(string: "http://localhost:8080/bridges")!
@@ -72,7 +111,11 @@ struct BridgeFetch {
                     }
                 }
             }
-        task.resume()
+            task.resume()
+            guard let updateBridge = updateBridge else {
+                return
+            }
+            postBridgeNotification(bridge: bridge, bridgeDetails: updateBridge)
         }
     }
     static func getBridgeInDb(db: Database, completion: @escaping ([BridgeResponse]) -> Void) {
