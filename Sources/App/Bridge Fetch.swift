@@ -46,7 +46,7 @@ struct BridgeFetch {
           }
         }
         """
-        let data = try! JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
+        let data = message.data(using: .utf8)
         let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
             if let error = error {
                 print("Error making Post request: \(error.localizedDescription)")
