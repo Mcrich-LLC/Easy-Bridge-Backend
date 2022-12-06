@@ -40,9 +40,17 @@ struct BridgeFetch {
         let message = """
         {
           "to": "/topics/\(bridgeName)",
+          "priority": "high",
+          "mutable_content": true,
           "notification": {
             "title": "\(bridgeDetails.bridgeLocation)",
-            "body": "\(bridge.name.capitalized) is now \(bridge.status.rawValue)"
+            "body": "The \(bridge.name.capitalized) is now \(bridge.status.rawValue)",
+            "badge": 0,
+            "sound": "default",
+            "content_availible": "true"
+          },
+          "data": {
+              "interruption_level": 2
           }
         }
         """
