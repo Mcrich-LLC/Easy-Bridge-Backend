@@ -47,10 +47,10 @@ struct BridgeFetch {
             "body": "The \(bridge.name.capitalized) is now \(bridge.status.rawValue)",
             "badge": 0,
             "sound": "default",
-            "content_availible": "true"
+            "content_availible": true
           },
           "data": {
-              "interruption_level": 2
+              "interruption_level": 3
           }
         }
         """
