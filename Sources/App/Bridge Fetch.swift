@@ -240,6 +240,17 @@ struct BridgeFetch {
                 print("error = \(error)")
             }
         }
+        TwitterFetch.shared.fetchTweet(id: "936366064518160384") { response in
+            switch response {
+            case .success(let response):
+                for tweet in response.data {
+                    print("tweet.text = \(tweet.text)")
+                    BridgeFetch.handleBridge(text: tweet.text, db: db)
+                }
+            case .failure(let error):
+                print("error = \(error)")
+            }
+        }
     }
     
     static func streamTweets(db: Database) {
