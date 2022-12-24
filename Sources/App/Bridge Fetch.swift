@@ -167,11 +167,7 @@ struct BridgeFetch {
         if !bridgesUsed.contains(where: { bridge in
             bridge.name == name
         }) {
-            if text.lowercased().contains("closed") {
-                let bridge = Bridge(name: name, status: .up)
-                bridgesUsed.append(bridge)
-                BridgeFetch.updateBridge(bridge: bridge, db: db)
-            } else if text.lowercased().contains("maintenance") {
+            if text.lowercased().contains("maintenance") || text.lowercased().contains("until further notice") {
                 if text.lowercased().contains("finished") {
                     let bridge = Bridge(name: name, status: .down)
                     bridgesUsed.append(bridge)
@@ -181,8 +177,16 @@ struct BridgeFetch {
                     bridgesUsed.append(bridge)
                     BridgeFetch.updateBridge(bridge: bridge, db: db)
                 }
-            } else {
+            } else if text.lowercased().contains("closed") {
+                let bridge = Bridge(name: name, status: .up)
+                bridgesUsed.append(bridge)
+                BridgeFetch.updateBridge(bridge: bridge, db: db)
+            } else if text.lowercased().contains("open") {
                 let bridge = Bridge(name: name, status: .down)
+                bridgesUsed.append(bridge)
+                BridgeFetch.updateBridge(bridge: bridge, db: db)
+            } else {
+                let bridge = Bridge(name: name, status: .unknown)
                 bridgesUsed.append(bridge)
                 BridgeFetch.updateBridge(bridge: bridge, db: db)
             }
@@ -248,6 +252,7 @@ enum BridgeStatus: String {
     case up
     case down
     case maintenance
+    case unknown
 }
 struct BridgeResponse: Identifiable, Hashable, Codable {
     let id: String
