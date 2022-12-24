@@ -37,42 +37,54 @@ struct BridgeFetch {
             "Authorization": "Bearer \(Secrets.firebaseCloudMessagingBearerToken)"
         ]
         let bridgeName = "\(bridgeDetails.bridgeLocation)_\(bridge.name)".replacingOccurrences(of: " Bridge", with: "").replacingOccurrences(of: ",", with: "").replacingOccurrences(of: "st", with: "").replacingOccurrences(of: "nd", with: "").replacingOccurrences(of: "3rd", with: "").replacingOccurrences(of: "th", with: "").replacingOccurrences(of: " ", with: "_")
-        let message = """
-        {
-          "to": "/topics/\(bridgeName)",
-          "priority": "high",
-          "mutable_content": true,
-          "notification": {
-            "title": "\(bridgeDetails.bridgeLocation)",
-            "body": "The \(bridge.name.capitalized) is now \(bridge.status.rawValue)",
-            "badge": 0,
-            "sound": "default",
-            "content_availible": true
-          },
-          "data": {
-              "interruption_level": 3
-          }
-        }
-        """
-        let data = message.data(using: .utf8)
-        let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
-            if let error = error {
-                print("Error making Post request: \(error.localizedDescription)")
-                return
+        func sendNotification(status: String) {
+            let message = """
+            {
+              "to": "/topics/\(bridgeName)",
+              "priority": "high",
+              "mutable_content": true,
+              "notification": {
+                "title": "\(bridgeDetails.bridgeLocation)",
+                "body": "The \(bridge.name.capitalized) is now \(status)",
+                "badge": 0,
+                "sound": "default",
+                "content_availible": true
+              },
+              "data": {
+                  "interruption_level": 3
+              }
             }
-            
-            if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
-                guard responseCode == 200 else {
-                    print("Invalid Firebase response code: \(responseCode)")
+            """
+            let data = message.data(using: .utf8)
+            let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
+                if let error = error {
+                    print("Error making Post request: \(error.localizedDescription)")
                     return
                 }
                 
-                if let responseJSONData = try? JSONSerialization.jsonObject(with: responseData, options: .allowFragments) {
-                    print("Firebase Response JSON data = \(responseJSONData)")
+                if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
+                    guard responseCode == 200 else {
+                        print("Invalid Firebase response code: \(responseCode)")
+                        return
+                    }
+                    
+                    if let responseJSONData = try? JSONSerialization.jsonObject(with: responseData, options: .allowFragments) {
+                        print("Firebase Response JSON data = \(responseJSONData)")
+                    }
                 }
             }
+            task.resume()
         }
-        task.resume()
+        switch bridge.status {
+        case .up:
+            sendNotification(status: BridgeStatus.up.rawValue)
+        case .down:
+            sendNotification(status: BridgeStatus.down.rawValue)
+        case .maintenance:
+            sendNotification(status: "under maintenance")
+        case .unknown:
+            sendNotification(status: "in an unknown state")
+        }
     }
     static func updateBridge(bridge: Bridge, db: Database) {
         getBridgeInDb(db: db) { bridges in
