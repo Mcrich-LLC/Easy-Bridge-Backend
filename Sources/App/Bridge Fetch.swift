@@ -174,12 +174,13 @@ struct BridgeFetch {
         task.resume()
         }
     static var bridgesUsed: [Bridge] = []
+    static let maintenanceKeywords = ["maintenance", "until further notice", "issue"]
     
     static func addBridge(text: String, name: String, db: Database) {
         if !bridgesUsed.contains(where: { bridge in
             bridge.name == name
         }) {
-            if text.lowercased().contains("maintenance") || text.lowercased().contains("until further notice") {
+            if maintenanceKeywords.contains(text.lowercased()) {
                 if text.lowercased().contains("finished") {
                     let bridge = Bridge(name: name, status: .down)
                     bridgesUsed.append(bridge)
