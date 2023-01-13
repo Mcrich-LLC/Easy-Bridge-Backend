@@ -172,7 +172,7 @@ struct BridgeFetch {
             }
         }
         task.resume()
-        }
+    }
     static var bridgesUsed: [Bridge] = []
     static let maintenanceKeywords = ["maintenance", "until further notice", "issue"]
     

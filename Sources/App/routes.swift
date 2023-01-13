@@ -48,5 +48,18 @@ func routes(_ app: Application) throws {
         }
     }
     
+    app.get("bridgesjson") { req async -> String in
+        let (data, response) = try! await URLSession.shared.data(from: URL(string: "http://localhost:8080/bridges")!)
+        guard let response = response as? HTTPURLResponse else {
+            return "{}"
+        }
+        guard (200 ... 299) ~= response.statusCode else {
+            print("❌ Status code is \(response.statusCode)")
+            return "{}"
+        }
+        let array = String(data: data, encoding: .utf8)
+        return "{\(array ?? "")}"
+    }
+    
     try app.register(collection: BridgeController())
 }
