@@ -49,7 +49,7 @@ func routes(_ app: Application) throws {
     }
     
     app.get("bridgesjson") { req async -> String in
-        let (data, response) = try! await URLSession.shared.data(from: URL(string: "http://localhost:8080/bridges")!)
+        let (data, response) = try! await URLSession.shared.data(from: URL(string: "http://localhost:8080/bridges") ?? URL(string: "https://dummyjson.com/products/")!)
         guard let response = response as? HTTPURLResponse else {
             return "{}"
         }
