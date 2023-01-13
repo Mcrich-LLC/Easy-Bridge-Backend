@@ -12,7 +12,11 @@ import VaporCron
 
 struct BridgeController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
-        let bridges = routes.grouped("")
+        let rootBridges = routes.grouped("")
+        rootBridges.get(use: index)
+        rootBridges.post(use: create)
+        rootBridges.put(use: update)
+        let bridges = routes.grouped("bridges")
         bridges.get(use: index)
         bridges.post(use: create)
         bridges.put(use: update)
