@@ -1,9 +1,10 @@
 @echo off
 
 cd /D "%~dp0"
+set /p "domain=Enter Domain You Would Like To Renew: "
 certbot renew --dry-run
-copy /Y C:\Certbot\live\mc.mcrich23.com\privkey.pem key.pem
-copy /Y C:\Certbot\live\mc.mcrich23.com\fullchain.pem fullchain.pem
-copy /Y C:\Certbot\live\mc.mcrich23.com\chain.pem chain.pem
-copy /Y C:\Certbot\live\mc.mcrich23.com\cert.pem cert.pem
+copy /Y C:\Certbot\live\%domain%\privkey.pem key.pem
+copy /Y C:\Certbot\live\%domain%\fullchain.pem fullchain.pem
+copy /Y C:\Certbot\live\%domain%\chain.pem chain.pem
+copy /Y C:\Certbot\live\%domain%\cert.pem cert.pem
 pause
