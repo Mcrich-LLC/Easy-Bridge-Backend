@@ -135,7 +135,9 @@ struct BridgeFetch {
             guard let updateBridge = updateBridge else {
                 return
             }
-            postBridgeNotification(bridge: bridge, bridgeDetails: updateBridge)
+            if Utilities.environment == .production {
+                postBridgeNotification(bridge: bridge, bridgeDetails: updateBridge)
+            }
         }
     }
     static func getBridgeInDb(db: Database, completion: @escaping ([BridgeResponse]) -> Void) {

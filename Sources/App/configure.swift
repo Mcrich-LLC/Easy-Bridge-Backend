@@ -28,6 +28,7 @@ public func configure(_ app: Application) throws {
 //        try app.autoRevert().wait()
         try app.autoMigrate().wait()
     }
+    Utilities.environment = app.environment
     // register routes
     try routes(app)
     
