@@ -88,7 +88,7 @@ struct BridgeFetch {
     }
     static func updateBridge(bridge: Bridge, db: Database) {
         getBridgeInDb(db: db) { bridges in
-            let url = URL(string: "http://localhost:8080/bridges")!
+            let url = URL(string: "http://localhost:\(Secrets.runBindPort)/bridges")!
 
             var request = URLRequest(url: url)
         request.httpMethod = "PUT"
@@ -141,7 +141,7 @@ struct BridgeFetch {
         }
     }
     static func getBridgeInDb(db: Database, completion: @escaping ([BridgeResponse]) -> Void) {
-        var request = URLRequest(url: URL(string: "http://localhost:8080/bridges")!,
+        var request = URLRequest(url: URL(string: "http://localhost:\(Secrets.runBindPort)/bridges")!,
                                  timeoutInterval: Double.infinity)
         
         request.addValue("Bearer \(Secrets.twitterBearerToken)", forHTTPHeaderField: "Authorization")
