@@ -9,6 +9,9 @@ import Foundation
 
 class StartupNotification {
     static func push() {
+        guard Secrets.pushoverNotificationKey != "get-from-pushover.net" && Secrets.pushoverNotificationKey != "" else {
+            return
+        }
         let url = URL(string: "https://api.pushover.net/1/messages.json?token=\(Secrets.pushoverNotificationKey)&user=um3jmo7mud1b1doesrfhfn93s79gxj&device=Morris_iPhone&title=Easy+Bridge+Backend&message=Easy+Bridge+Backend+Started+Up")!
 
         var request = URLRequest(url: url)
