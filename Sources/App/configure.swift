@@ -33,6 +33,7 @@ public func configure(_ app: Application) throws {
     try routes(app)
     
     Task {
+        StartupNotification.push()
         BridgeFetch.fetchTweets(db: app.db)
 //        BridgeFetch.streamTweets(db: app.db)
         let twitterBridgeFetch = try app.cron.schedule(BridgeCheckStreamEveryMinuteJob.self)
