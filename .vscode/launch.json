@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Run",
+            "program": "${workspaceFolder:Seattle-Bridge-Backend}\\.build/debug/Run",
+            "args": [],
+            "cwd": "${workspaceFolder:Seattle-Bridge-Backend}",
+            "preLaunchTask": "swift: Build Debug Run"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release Run",
+            "program": "${workspaceFolder:Seattle-Bridge-Backend}\\.build/release/Run",
+            "args": [],
+            "cwd": "${workspaceFolder:Seattle-Bridge-Backend}",
+            "preLaunchTask": "swift: Build Release Run"
+        }
+    ]
+}
