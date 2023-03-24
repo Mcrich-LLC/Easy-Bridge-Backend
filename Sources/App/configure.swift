@@ -22,6 +22,14 @@ public func configure(_ app: Application) throws {
             database: Environment.get("DATABASE_NAME") ?? "vapor_database"
         ), as: .psql)
     }
+    let corsConfiguration = CORSMiddleware.Configuration(
+        allowedOrigin: .all,
+        allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
+        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin]
+    )
+    let cors = CORSMiddleware(configuration: corsConfiguration)
+    // cors middleware should come before default error middleware using `at: .beginning`
+    app.middleware.use(cors, at: .beginning)
     
     app.migrations.add(UpdateStatus())
     if app.environment == .development {
