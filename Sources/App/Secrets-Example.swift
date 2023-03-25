@@ -21,6 +21,6 @@ enum SecretsExample {
             return false
         }
     }
-    static let runBindPort = 8080
+    static let runBindPort = 8081
     static let pushoverNotificationKey = "get-from-pushover.net"
 }
