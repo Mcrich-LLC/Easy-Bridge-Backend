@@ -51,7 +51,8 @@ struct BridgeFetch {
                 "content_availible": true
               },
               "data": {
-                  "interruption_level": 3
+                  "interruption_level": 3,
+                  "bridge_id": \(bridgeDetails.id)
               }
             }
             """
