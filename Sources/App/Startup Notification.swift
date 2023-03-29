@@ -20,14 +20,15 @@ class StartupNotification {
         let url = URL(string: "https://api.pushover.net/1/messages.json?token=\(Secrets.pushoverNotificationKey)&user=um3jmo7mud1b1doesrfhfn93s79gxj&device=Morris_iPhone&title=Easy+Bridge+Backend&message=Easy+Bridge+Backend+Started+Up")!
 
         var request = URLRequest(url: url)
-    request.httpMethod = "PUT"
+    request.httpMethod = "POST"
     request.allHTTPHeaderFields = [
             "Content-Type": "application/json",
             "Accept": "application/json"
         ]
         let jsonDictionary: [String: Any] = [:]
         let data = try! JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
-        let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
+        request.httpBody = data
+        let task = URLSession.shared.dataTask(with: request) { (responseData, response, error) in
             if let error = error {
                 print("Error making PUT request: \(error.localizedDescription)")
                 return
