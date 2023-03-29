@@ -224,7 +224,7 @@ struct BridgeFetch {
         case let str where str.contains("University Bridge"):
             BridgeFetch.addBridge(text: text, name: "University Bridge", db: db)
         case let str where str.contains("1st Ave S Bridge"):
-            BridgeFetch.addBridge(text: text, name: "1 Ave S Bridge", db: db)
+            BridgeFetch.addBridge(text: text, name: "1st Ave S Bridge", db: db)
         default:
             break
         }
