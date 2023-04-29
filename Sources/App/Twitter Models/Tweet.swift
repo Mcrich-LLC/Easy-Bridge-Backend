@@ -10,4 +10,5 @@ import Foundation
 struct Tweet: Codable, Hashable {
     let id: String
     let text: String
+    let authorId: String?
 }

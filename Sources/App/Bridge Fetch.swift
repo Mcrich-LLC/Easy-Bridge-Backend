@@ -178,7 +178,7 @@ struct BridgeFetch {
     static var bridgesUsed: [Bridge] = []
     static let maintenanceKeywords = ["maintenance", "until further notice", "issue"]
     
-    static func addBridge(text: String, name: String, db: Database) {
+    static func addBridge(text: String, from user: User, name: String, db: Database) {
         if !bridgesUsed.contains(where: { bridge in
             bridge.name == name
         }) {
@@ -201,29 +201,31 @@ struct BridgeFetch {
                 bridgesUsed.append(bridge)
                 BridgeFetch.updateBridge(bridge: bridge, db: db)
             } else {
-                let bridge = Bridge(name: name, status: .unknown)
-                bridgesUsed.append(bridge)
-                BridgeFetch.updateBridge(bridge: bridge, db: db)
+                if user == .seattleDOTBridges {
+                    let bridge = Bridge(name: name, status: .unknown)
+                    bridgesUsed.append(bridge)
+                    BridgeFetch.updateBridge(bridge: bridge, db: db)
+                }
             }
         }
     }
     
-    static func handleBridge(text: String, db: Database) {
+    static func handleBridge(text: String, from user: User, db: Database) {
         switch text {
         case let str where str.contains("Ballard Bridge"):
-            BridgeFetch.addBridge(text: text, name: "Ballard Bridge", db: db)
+            BridgeFetch.addBridge(text: text, from: user, name: "Ballard Bridge", db: db)
         case let str where str.contains("Fremont Bridge"):
-            BridgeFetch.addBridge(text: text, name: "Fremont Bridge", db: db)
+            BridgeFetch.addBridge(text: text, from: user, name: "Fremont Bridge", db: db)
         case let str where str.contains("Montlake Bridge"):
-            BridgeFetch.addBridge(text: text, name: "Montlake Bridge", db: db)
+            BridgeFetch.addBridge(text: text, from: user, name: "Montlake Bridge", db: db)
         case let str where str.contains("Lower Spokane St Bridge"):
-            BridgeFetch.addBridge(text: text, name: "Spokane St Swing Bridge", db: db)
+            BridgeFetch.addBridge(text: text, from: user, name: "Spokane St Swing Bridge", db: db)
         case let str where str.contains("South Park Bridge"):
-            BridgeFetch.addBridge(text: text, name: "South Park Bridge", db: db)
+            BridgeFetch.addBridge(text: text, from: user, name: "South Park Bridge", db: db)
         case let str where str.contains("University Bridge"):
-            BridgeFetch.addBridge(text: text, name: "University Bridge", db: db)
+            BridgeFetch.addBridge(text: text, from: user, name: "University Bridge", db: db)
         case let str where str.contains("1st Ave S Bridge"):
-            BridgeFetch.addBridge(text: text, name: "1st Ave S Bridge", db: db)
+            BridgeFetch.addBridge(text: text, from: user, name: "1st Ave S Bridge", db: db)
         default:
             break
         }
@@ -237,7 +239,7 @@ struct BridgeFetch {
             case .success(let response):
                 for tweet in response.data {
                     print("tweet.text = \(tweet.text)")
-                    BridgeFetch.handleBridge(text: tweet.text, db: db)
+                    BridgeFetch.handleBridge(text: tweet.text, from: .init(rawValue: tweet.authorId ?? "2768116808") ?? .seattleDOTBridges, db: db)
                 }
             case .failure(let error):
                 print("error = \(error)")
@@ -248,7 +250,7 @@ struct BridgeFetch {
             case .success(let response):
                 for tweet in response.data {
                     print("tweet.text = \(tweet.text)")
-                    BridgeFetch.handleBridge(text: tweet.text, db: db)
+                    BridgeFetch.handleBridge(text: tweet.text, from: .init(rawValue: tweet.authorId ?? "936366064518160384") ?? .SDOTTraffic, db: db)
                 }
             case .failure(let error):
                 print("error = \(error)")
@@ -262,7 +264,7 @@ struct BridgeFetch {
             switch response {
             case .success(let response):
                 BridgeFetch.bridgesUsed.removeAll()
-                BridgeFetch.handleBridge(text: response.data.text, db: db)
+                BridgeFetch.handleBridge(text: response.data.text, from: .init(rawValue: response.data.authorId ?? "") ?? .SDOTTraffic, db: db)
             case .failure(let error):
                 print("error = \(error)")
             }
@@ -290,4 +292,9 @@ struct BridgeResponse: Identifiable, Hashable, Codable {
     let latitude: Double
     let longitude: Double
     let bridgeLocation: String
+}
+
+enum User: String {
+    case seattleDOTBridges = "2768116808"
+    case SDOTTraffic = "936366064518160384"
 }
