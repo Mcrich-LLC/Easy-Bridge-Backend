@@ -43,7 +43,7 @@ struct BridgeFetch {
               "to": "/topics/subscription_check",
               "mutable_content": true,
               "notification": {
-                "title": "subscription check",
+                "title": "",
                 "body": "",
                 "badge": 0,
                 "sound": "default",
