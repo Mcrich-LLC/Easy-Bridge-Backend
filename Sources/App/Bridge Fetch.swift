@@ -113,15 +113,17 @@ struct BridgeFetch {
             task.resume()
         }
         sendSubscriptionCheck {
-            switch bridge.status {
-            case .up:
-                sendNotification(status: BridgeStatus.up.rawValue)
-            case .down:
-                sendNotification(status: BridgeStatus.down.rawValue)
-            case .maintenance:
-                sendNotification(status: "under maintenance")
-            case .unknown:
-                sendNotification(status: "in an unknown state")
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                switch bridge.status {
+                case .up:
+                    sendNotification(status: BridgeStatus.up.rawValue)
+                case .down:
+                    sendNotification(status: BridgeStatus.down.rawValue)
+                case .maintenance:
+                    sendNotification(status: "under maintenance")
+                case .unknown:
+                    sendNotification(status: "in an unknown state")
+                }
             }
         }
     }
