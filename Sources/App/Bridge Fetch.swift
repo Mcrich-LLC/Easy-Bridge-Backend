@@ -75,6 +75,7 @@ struct BridgeFetch {
             task.resume()
         }
         func sendNotification(status: String) {
+            print("send status notification")
             let message = """
             {
               "to": "/topics/\(bridgeName)",
