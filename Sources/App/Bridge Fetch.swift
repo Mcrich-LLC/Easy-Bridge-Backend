@@ -68,9 +68,9 @@ struct BridgeFetch {
                     
                     if let responseJSONData = try? JSONSerialization.jsonObject(with: responseData, options: .allowFragments) {
                         print("Firebase Response JSON data = \(responseJSONData)")
-                        completion()
                     }
                 }
+                completion()
             }
             task.resume()
         }
