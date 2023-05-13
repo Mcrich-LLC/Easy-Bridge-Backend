@@ -114,7 +114,7 @@ struct BridgeFetch {
             task.resume()
         }
         sendSubscriptionCheck {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 switch bridge.status {
                 case .up:
                     sendNotification(status: BridgeStatus.up.rawValue)
@@ -125,7 +125,7 @@ struct BridgeFetch {
                 case .unknown:
                     sendNotification(status: "in an unknown state")
                 }
-            }
+//            }
         }
     }
     static func updateBridge(bridge: Bridge, db: Database) {
