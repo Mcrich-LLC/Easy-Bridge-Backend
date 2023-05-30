@@ -27,6 +27,6 @@ Check out the full app: [Easy Bridge Tracker](https://github.com/Mcrich23/Easy-B
 * Setup the [Secrets.swift file](#setting-up-secrets)
 
 ### Setting Up Secrets
-* Create an API key (yourself) for vapor to update itself and also get one from [twitter](developer.twitter.com)
+* Create an API key (yourself) for vapor to update itself and also get one from [twitter](https://developer.twitter.com)
 * Once you have your API keys, create a new file called `Secrets.swift` in the Seattle-Bridge-Backend directory of the project, by typing `touch Secrets.swift` in Terminal
 * Use the file `Secrets-Example.swift` as the format for your Secrets.swift file. Paste your API key into the `bearerToken` property
