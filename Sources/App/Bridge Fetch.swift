@@ -27,58 +27,97 @@ struct BridgeCheckStreamEveryMinuteJob: VaporCronSchedulable {
     }
 }
 struct BridgeFetch {
-    static func postBridgeNotification(bridge: Bridge, bridgeDetails: BridgeResponse) {
-        let url = URL(string: "https://fcm.googleapis.com/fcm/send")!
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "Post"
-        request.allHTTPHeaderFields = [
-            "Content-Type": "application/json",
-            "Authorization": "Bearer \(Secrets.firebaseCloudMessagingBearerToken)"
-        ]
-        let bridgeName = "\(bridgeDetails.bridgeLocation)_\(bridge.name)".replacingOccurrences(of: " Bridge", with: "").replacingOccurrences(of: ",", with: "").replacingOccurrences(of: "st", with: "").replacingOccurrences(of: "nd", with: "").replacingOccurrences(of: "3rd", with: "").replacingOccurrences(of: "th", with: "").replacingOccurrences(of: " ", with: "_")
-        func sendSubscriptionCheck(then completion: @escaping () -> Void) {
-            let message = """
-            {
-              "to": "/topics/subscription_check",
-              "mutable_content": true,
-              "notification": {
-                "title": "",
-                "body": "",
-                "badge": 0,
-                "sound": "default",
-                "content_availible": true
-              }
+    private static func getPushNotificationPreferences(path: String, completion: @escaping (Preferences) -> Void) {
+        guard let url = URL(string: "https://firestore.googleapis.com/v1/projects/easy-bridge-tracker/databases/(default)/documents/\(path)?key=\(Secrets.firebaseWebAuthToken)") else { return }
+        let request = URLRequest(url: url)
+        let task = URLSession.shared.dataTask(with: request) { (responseData, response, error) in
+            if let error = error {
+                print("Error making Post request: \(error.localizedDescription)")
+                return
             }
-            """
-            let data = message.data(using: .utf8)
-            let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
-                if let error = error {
-                    print("Error making Post request: \(error.localizedDescription)")
-                    completion()
+            
+            if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
+                guard responseCode == 200 else {
+                    print("Invalid Firebase response code: \(responseCode)")
                     return
                 }
                 
-                if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
-                    guard responseCode == 200 else {
-                        print("Invalid Firebase response code: \(responseCode)")
-                        completion()
-                        return
-                    }
+                do {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    let eventResponse = try decoder.decode(PrefResponse.self, from: responseData)
                     
-                    if let responseJSONData = try? JSONSerialization.jsonObject(with: responseData, options: .allowFragments) {
-                        print("Firebase Response JSON data = \(responseJSONData)")
-                    }
+                    // Use the decoded data as required
+                    completion(eventResponse.fields)
+                } catch {
+                    print(error)
                 }
-                completion()
             }
-            task.resume()
         }
-        func sendNotification(status: String) {
-            print("send status notification")
-            let message = """
+        task.resume()
+    }
+
+    private static func getPushNotificationList(bridge: BridgeResponse, completion: @escaping (Preferences) -> Void) {
+        guard let url = URL(string: "https://firestore.googleapis.com/v1/projects/easy-bridge-tracker/databases/(default)/documents/Directory/\(bridge.id)?key=\(Secrets.firebaseWebAuthToken)") else { return }
+        let request = URLRequest(url: url)
+        let task = URLSession.shared.dataTask(with: request) { (responseData, response, error) in
+            if let error = error {
+                print("Error making Post request: \(error.localizedDescription)")
+                return
+            }
+            
+            if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
+                guard responseCode == 200 else {
+                    print("Invalid Firebase response code: \(responseCode)")
+                    return
+                }
+                
+                do {
+                    let jsonDecoder = JSONDecoder()
+                        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
+                    let directory = try jsonDecoder.decode(DirectoryResponse.self, from: responseData)
+                    print("result = \(directory)")
+                    for path in directory.fields.subscribedUsers {
+                        getPushNotificationPreferences(path: path, completion: completion)
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    private static func currentTimeIsBetween(startTime: String, endTime: String) -> Bool {
+        guard let start = Formatter.today.date(from: startTime),
+              let end = Formatter.today.date(from: endTime) else {
+            return false
+        }
+        return DateInterval(start: start, end: end).contains(Date())
+    }
+    
+    static func postBridgeNotification(bridge: Bridge, bridgeDetails: BridgeResponse) {
+        getPushNotificationList(bridge: bridgeDetails) { pref in
+            let bridgeId = pref.bridgeIds
+            guard let day = Day.currentDay(),
+                  (pref.days).contains(day.rawValue) && (currentTimeIsBetween(startTime: pref.startTime, endTime: pref.endTime) || pref.isAllDay) && pref.bridgeIds.contains(bridgeDetails.id) && pref.isActive
+            else {
+                return
+            }
+            let url = URL(string: "https://fcm.googleapis.com/fcm/send")!
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "Post"
+            request.allHTTPHeaderFields = [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(Secrets.firebaseCloudMessagingBearerToken)"
+            ]
+            let bridgeName = "\(bridgeDetails.bridgeLocation)_\(bridge.name)".replacingOccurrences(of: " Bridge", with: "").replacingOccurrences(of: ",", with: "").replacingOccurrences(of: "st", with: "").replacingOccurrences(of: "nd", with: "").replacingOccurrences(of: "3rd", with: "").replacingOccurrences(of: "th", with: "").replacingOccurrences(of: " ", with: "_")
+            func sendNotification(status: String) {
+                print("send status notification")
+                let message = """
             {
-              "to": "/topics/\(bridgeName)",
+              "to": "\(pref.deviceToken)",
               "priority": "high",
               "mutable_content": true,
               "notification": {
@@ -93,39 +132,36 @@ struct BridgeFetch {
               }
             }
             """
-            let data = message.data(using: .utf8)
-            let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
-                if let error = error {
-                    print("Error making Post request: \(error.localizedDescription)")
-                    return
-                }
-                
-                if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
-                    guard responseCode == 200 else {
-                        print("Invalid Firebase response code: \(responseCode)")
+                let data = message.data(using: .utf8)
+                let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
+                    if let error = error {
+                        print("Error making Post request: \(error.localizedDescription)")
                         return
                     }
                     
-                    if let responseJSONData = try? JSONSerialization.jsonObject(with: responseData, options: .allowFragments) {
-                        print("Firebase Response JSON data = \(responseJSONData)")
+                    if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
+                        guard responseCode == 200 else {
+                            print("Invalid Firebase response code: \(responseCode)")
+                            return
+                        }
+                        
+                        if let responseJSONData = try? JSONSerialization.jsonObject(with: responseData, options: .allowFragments) {
+                            print("Firebase Response JSON data = \(responseJSONData)")
+                        }
                     }
                 }
+                task.resume()
             }
-            task.resume()
-        }
-        sendSubscriptionCheck {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                switch bridge.status {
-                case .up:
-                    sendNotification(status: BridgeStatus.up.rawValue)
-                case .down:
-                    sendNotification(status: BridgeStatus.down.rawValue)
-                case .maintenance:
-                    sendNotification(status: "under maintenance")
-                case .unknown:
-                    sendNotification(status: "in an unknown state")
-                }
-//            }
+            switch bridge.status {
+            case .up:
+                sendNotification(status: BridgeStatus.up.rawValue)
+            case .down:
+                sendNotification(status: BridgeStatus.down.rawValue)
+            case .maintenance:
+                sendNotification(status: "under maintenance")
+            case .unknown:
+                sendNotification(status: "in an unknown state")
+            }
         }
     }
     static func updateBridge(bridge: Bridge, db: Database) {
@@ -336,7 +372,142 @@ struct BridgeResponse: Identifiable, Hashable, Codable {
     let bridgeLocation: String
 }
 
+struct DirectoryResponse: Codable {
+    let fields: Directory
+}
+
+struct Directory: Codable {
+    let subscribedUsers: [String]
+    
+    init(subscribedUsers: SubscribedUsers) {
+        self.subscribedUsers = subscribedUsers.arrayValue.values.map({ $0.stringValue })
+    }
+}
+
+struct PrefResponse: Codable {
+    let createTime: String
+    let fields: Preferences
+    let updateTime: String
+    let name: String
+}
+
+struct Preferences: Codable {
+    let bridgeIds: [String]
+    let days: [String]
+    let endTime: String
+    let id: String
+    let isActive: Bool
+    let isAllDay: Bool
+    let notificationPriority: String
+    let startTime: String
+    let title: String
+    let deviceToken: String
+    
+    init(bridgeIds: BridgeIds, days: Days, endTime: EndTime, id: ID, isActive: IsActive, isAllDay: IsAllDay, notificationPriority: NotificationPriority, startTime: StartTime, title: Title, deviceToken: DeviceToken) {
+        self.bridgeIds = bridgeIds.arrayValue.values.map({ $0.stringValue })
+        self.days = days.arrayValue.values.map({ $0.stringValue })
+        self.endTime = endTime.stringValue
+        self.id = id.stringValue
+        self.isActive = isActive.booleanValue
+        self.isAllDay = isAllDay.booleanValue
+        self.notificationPriority = notificationPriority.stringValue
+        self.startTime = startTime.stringValue
+        self.title = title.stringValue
+        self.deviceToken = deviceToken.stringValue
+    }
+}
+
+struct SubscribedUsers: Codable {
+    let arrayValue: ArrayValue
+}
+
+struct BridgeIds: Codable {
+    let arrayValue: ArrayValue
+}
+
+struct ArrayValue: Codable {
+    let values: [Value]
+}
+
+struct Value: Codable {
+    let stringValue: String
+}
+
+struct Days: Codable {
+    let arrayValue: ArrayValue
+}
+
+struct EndTime: Codable {
+    let stringValue: String
+}
+
+struct ID: Codable {
+    let stringValue: String
+}
+
+struct IsActive: Codable {
+    let booleanValue: Bool
+}
+
+struct IsAllDay: Codable {
+    let booleanValue: Bool
+}
+
+struct NotificationPriority: Codable {
+    let stringValue: String
+}
+
+struct StartTime: Codable {
+    let stringValue: String
+}
+
+struct Title: Codable {
+    let stringValue: String
+}
+
+struct DeviceToken: Codable {
+    let stringValue: String
+}
+
+enum Day: String, CaseIterable, Codable, Hashable {
+    case monday
+    case tuesday
+    case wednesday
+    case thursday
+    case friday
+    case saturday
+    case sunday
+    
+    static func currentDay() -> Self? {
+        guard let day = Date().dayOfWeek() else {
+            return nil
+        }
+        return Self(rawValue: day)
+    }
+    
+    static func stringsCapitalized(for days: [Self]) -> [String] {
+        days.map { $0.rawValue.capitalized }
+    }
+}
+
 enum User: String {
     case seattleDOTBridges = "2768116808"
     case SDOTTraffic = "936366064518160384"
+}
+
+extension Formatter {
+    static let today: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = .init(identifier: "en_US_POSIX")
+        dateFormatter.defaultDate = Calendar.current.startOfDay(for: Date())
+        dateFormatter.dateFormat = "hh:mm a"
+        return dateFormatter
+    }()
+}
+extension Date {
+    func dayOfWeek() -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEEE"
+        return dateFormatter.string(from: self).lowercased()
+    }
 }
