@@ -403,7 +403,7 @@ struct Preferences: Codable {
     let title: String
     let deviceToken: String
     
-    init(bridgeIds: BridgeIds, days: Days, endTime: EndTime, id: ID, isActive: IsActive, isAllDay: IsAllDay, notificationPriority: NotificationPriority, startTime: StartTime, title: Title, deviceToken: DeviceToken) {
+    init(bridgeIds: BridgeIds, days: Days, endTime: EndTime, id: Id, isActive: IsActive, isAllDay: IsAllDay, notificationPriority: NotificationPriority, startTime: StartTime, title: Title, deviceToken: DeviceToken) {
         self.bridgeIds = bridgeIds.arrayValue.values.map({ $0.stringValue })
         self.days = days.arrayValue.values.map({ $0.stringValue })
         self.endTime = endTime.stringValue
@@ -441,7 +441,7 @@ struct EndTime: Codable {
     let stringValue: String
 }
 
-struct ID: Codable {
+struct Id: Codable {
     let stringValue: String
 }
 
