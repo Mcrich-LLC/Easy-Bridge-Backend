@@ -22,8 +22,7 @@ struct BridgeController: RouteCollection {
         bridges.put(use: update)
     }
     func index(req: Request) throws -> EventLoopFuture<[BridgeModel]> {
-        throw Abort(.forbidden)
-        return BridgeModel.query(on: req.db).all()
+        return req.eventLoop.makeFailedFuture(Abort(.forbidden)) //BridgeModel.query(on: req.db).all()
     }
     
     func create(req: Request) throws -> EventLoopFuture<HTTPStatus> {
