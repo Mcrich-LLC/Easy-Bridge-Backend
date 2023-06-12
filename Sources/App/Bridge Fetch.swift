@@ -128,6 +128,7 @@ struct BridgeFetch {
                 "content_availible": true
               },
               "data": {
+                  "interruption_level": \(pref.notificationPriorityAsInt()),
                   "bridge_id": "\(bridgeDetails.id)"
               }
             }
@@ -414,6 +415,16 @@ struct Preferences: Codable {
         self.startTime = startTime.stringValue
         self.title = title.stringValue
         self.deviceToken = deviceToken.stringValue
+    }
+    
+    func notificationPriorityAsInt() -> Int {
+        switch self.notificationPriority {
+        case "silent": return 0
+        case "normal": return 1
+        case "time sensitive": return 2
+        default:
+            return 1
+        }
     }
 }
 
