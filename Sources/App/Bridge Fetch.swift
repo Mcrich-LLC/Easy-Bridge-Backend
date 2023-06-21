@@ -316,7 +316,7 @@ struct BridgeFetch {
         TwitterFetch.shared.fetchTweet(username: .seattleDOTBridges) { response in
             switch response {
             case .success(let feed):
-                guard let rssFeed = feed.rssFeed?.items else { return }
+                guard let rssFeed = feed.atomFeed?.entries else { return }
                 for item in rssFeed {
                     if let text = item.title {
                         print("tweet.text = \(text)")
@@ -330,7 +330,7 @@ struct BridgeFetch {
         TwitterFetch.shared.fetchTweet(username: .SDOTTraffic) { response in
             switch response {
             case .success(let feed):
-                guard let rssFeed = feed.rssFeed?.items else { return }
+                guard let rssFeed = feed.atomFeed?.entries else { return }
                 for item in rssFeed {
                     if let text = item.title {
                         print("tweet.text = \(text)")
@@ -348,7 +348,7 @@ struct BridgeFetch {
         TwitterFetch.shared.startStream { user, response in
             switch response {
             case .success(let feed):
-                guard let rssFeed = feed.rssFeed?.items, let item = rssFeed.first, let text = item.title else { return }
+                guard let rssFeed = feed.atomFeed?.entries, let item = rssFeed.first, let text = item.title else { return }
                 BridgeFetch.bridgesUsed.removeAll()
                 BridgeFetch.handleBridge(text: text, from: user, db: db)
             case .failure(let error):
