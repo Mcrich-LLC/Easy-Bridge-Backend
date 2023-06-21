@@ -342,9 +342,10 @@ struct BridgeFetch {
         TwitterFetch.shared.startStream { user, response in
             switch response {
             case .success(let feed):
-                guard let item = feed.first else { return }
-                BridgeFetch.bridgesUsed.removeAll()
-                BridgeFetch.handleBridge(text: item.title, from: user, db: db)
+                for item in feed {
+                    print("tweet.text = \(item.title)")
+                    BridgeFetch.handleBridge(text: item.title, from: user, db: db)
+                }
             case .failure(let error):
                 print("error = \(error)")
             }
