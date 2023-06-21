@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import TwitterAPIKit
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
+import FeedKit
 
 enum HttpError: Error {
     case badResponse
@@ -20,9 +20,36 @@ class TwitterFetch {
     
     static var shared = TwitterFetch()
     
-    let client = TwitterAPIClient(.bearer(Secrets.twitterBearerToken))
-    let searchStreamRequest = GetTweetsSearchStreamRequestV2()
-    func startStream(completion: @escaping (Result<StreamResponse, Error>) -> Void) {
+    private var isStreaming = false
+    func startStream(completion: @escaping (User, Result<Feed, ParserError>) -> Void) {
+        self.isStreaming = true
+        func repeatBridges() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(50)) {
+                if self.isStreaming {
+                    self.fetchTweet(username: .seattleDOTBridges) { result in
+                        completion(.seattleDOTBridges, result)
+                    }
+                    repeatBridges()
+                } else {
+                    return
+                }
+            }
+        }
+        func repeatTraffic() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(50)) {
+                if self.isStreaming {
+                    self.fetchTweet(username: .SDOTTraffic) { result in
+                        completion(.SDOTTraffic, result)
+                    }
+                    repeatBridges()
+                } else {
+                    return
+                }
+            }
+        }
+        repeatBridges()
+        repeatTraffic()
+        
 //        client.v2.stream.searchStream(searchStreamRequest).streamResponse(queue: .global(qos: .default)) { response in
 //            if (200 ... 299) ~= response.response?.statusCode ?? 0 {
 //                do {
@@ -41,10 +68,14 @@ class TwitterFetch {
 //        }
     }
     func stopStream() {
-        client.v2.stream.searchStream(searchStreamRequest).cancel()
+        self.isStreaming = false
     }
     
-    func fetchTweet(id: String, completion: @escaping (Result<Response, Error>) -> Void) {
+    func fetchTweet(username: User, completion: @escaping (Result<Feed, ParserError>) -> Void) {
+        guard let feedUrl = URL(string: "https://rss-bridge.org/bridge01/?action=display&amp;bridge=TwitterBridge&amp;context=By+username&amp;u=\(username.rawValue)&amp;format=Mrss") else { return }
+        let parser = FeedParser(URL: feedUrl)
+        let parsedResult = parser.parse()
+        completion(parsedResult)
 //        do {
 //            print("started twitter fetch")
 //            var request = URLRequest(url: URL(string: "https://api.twitter.com/2/users/\(id)/tweets")!,

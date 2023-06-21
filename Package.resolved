@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "feedkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nmdias/FeedKit.git",
+      "state" : {
+        "revision" : "68493a33d862c33c9a9f67ec729b3b7df1b20ade",
+        "version" : "9.1.2"
+      }
+    },
+    {
       "identity" : "fluent",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent.git",
@@ -232,15 +241,6 @@
       "state" : {
         "revision" : "0a5bc04095a675662cf24757cc0640aa2204253b",
         "version" : "1.0.2"
-      }
-    },
-    {
-      "identity" : "twitterapikit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mironal/TwitterAPIKit",
-      "state" : {
-        "branch" : "linux-support",
-        "revision" : "6e182117cd0d9dc7b38e0c029e5d8bda45e47e10"
       }
     },
     {

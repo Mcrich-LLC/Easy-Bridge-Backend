@@ -313,23 +313,29 @@ struct BridgeFetch {
     static func fetchTweets(db: Database) {
         BridgeFetch.bridgesUsed.removeAll()
         print("fetch tweets")
-        TwitterFetch.shared.fetchTweet(id: "2768116808") { response in
+        TwitterFetch.shared.fetchTweet(username: .seattleDOTBridges) { response in
             switch response {
-            case .success(let response):
-                for tweet in response.data {
-                    print("tweet.text = \(tweet.text)")
-                    BridgeFetch.handleBridge(text: tweet.text, from: .init(rawValue: tweet.authorId ?? "2768116808") ?? .seattleDOTBridges, db: db)
+            case .success(let feed):
+                guard let rssFeed = feed.rssFeed?.items else { return }
+                for item in rssFeed {
+                    if let text = item.title {
+                        print("tweet.text = \(text)")
+                        BridgeFetch.handleBridge(text: text, from: .seattleDOTBridges, db: db)
+                    }
                 }
             case .failure(let error):
                 print("error = \(error)")
             }
         }
-        TwitterFetch.shared.fetchTweet(id: "936366064518160384") { response in
+        TwitterFetch.shared.fetchTweet(username: .SDOTTraffic) { response in
             switch response {
-            case .success(let response):
-                for tweet in response.data {
-                    print("tweet.text = \(tweet.text)")
-                    BridgeFetch.handleBridge(text: tweet.text, from: .init(rawValue: tweet.authorId ?? "936366064518160384") ?? .SDOTTraffic, db: db)
+            case .success(let feed):
+                guard let rssFeed = feed.rssFeed?.items else { return }
+                for item in rssFeed {
+                    if let text = item.title {
+                        print("tweet.text = \(text)")
+                        BridgeFetch.handleBridge(text: text, from: .SDOTTraffic, db: db)
+                    }
                 }
             case .failure(let error):
                 print("error = \(error)")
@@ -339,11 +345,12 @@ struct BridgeFetch {
     
     static func streamTweets(db: Database) {
         print("start stream")
-        TwitterFetch.shared.startStream { response in
+        TwitterFetch.shared.startStream { user, response in
             switch response {
-            case .success(let response):
+            case .success(let feed):
+                guard let rssFeed = feed.rssFeed?.items, let item = rssFeed.first, let text = item.title else { return }
                 BridgeFetch.bridgesUsed.removeAll()
-                BridgeFetch.handleBridge(text: response.data.text, from: .init(rawValue: response.data.authorId ?? "") ?? .SDOTTraffic, db: db)
+                BridgeFetch.handleBridge(text: text, from: user, db: db)
             case .failure(let error):
                 print("error = \(error)")
             }
@@ -502,8 +509,8 @@ enum Day: String, CaseIterable, Codable, Hashable {
 }
 
 enum User: String {
-    case seattleDOTBridges = "2768116808"
-    case SDOTTraffic = "936366064518160384"
+    case seattleDOTBridges = "SDOTBridges"
+    case SDOTTraffic = "SDOTTraffic"
 }
 
 extension Formatter {
