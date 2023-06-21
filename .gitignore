@@ -9,3 +9,4 @@ db.sqlite
 .env
 /Sources/App/Secrets.swift
 seattle-bridge-backend.pub
+FCM-authkey.json

@@ -117,20 +117,22 @@ struct BridgeFetch {
                 print("send status notification")
                 let message = """
             {
-              "to": "\(pref.deviceToken)",
-              "priority": "high",
-              "mutable_content": true,
-              "notification": {
-                "title": "\(bridgeDetails.bridgeLocation)",
-                "body": "The \(bridge.name.capitalized) is now \(status)",
-                "badge": 0,
-                "sound": "default",
-                "content_availible": true
-              },
-              "data": {
-                  "interruption_level": \(pref.notificationPriorityAsInt()),
-                  "bridge_id": "\(bridgeDetails.id)"
-              }
+                "message": {
+                    "token": "\(pref.deviceToken)",
+                    "priority": "high",
+                    "mutable_content": true,
+                    "notification": {
+                        "title": "\(bridgeDetails.bridgeLocation)",
+                        "body": "The \(bridge.name.capitalized) is now \(status)",
+                        "badge": 0,
+                        "sound": "default",
+                        "content_availible": true
+                    },
+                    "data": {
+                        "interruption_level": \(pref.notificationPriorityAsInt()),
+                        "bridge_id": "\(bridgeDetails.id)"
+                    }
+                }
             }
             """
                 let data = message.data(using: .utf8)
@@ -222,8 +224,6 @@ struct BridgeFetch {
     static func getBridgeInDb(db: Database, completion: @escaping ([BridgeResponse]) -> Void) {
         var request = URLRequest(url: URL(string: "http://localhost:\(Secrets.runBindPort)/bridges")!,
                                  timeoutInterval: Double.infinity)
-        
-        request.addValue("Bearer \(Secrets.twitterBearerToken)", forHTTPHeaderField: "Authorization")
         
         request.httpMethod = "GET"
         
