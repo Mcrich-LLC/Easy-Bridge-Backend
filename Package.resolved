@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "fcm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/MihaelIsaev/FCM",
+      "state" : {
+        "revision" : "5d35a93bde97fd34879bf1f7ca198f4efacd8eca",
+        "version" : "2.11.1"
+      }
+    },
+    {
       "identity" : "fluent",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent.git",
@@ -52,6 +61,24 @@
       "state" : {
         "revision" : "bb3ab8e861152157f712cd08fc473e885bd0b4df",
         "version" : "2.7.2"
+      }
+    },
+    {
+      "identity" : "jwt",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vapor/jwt.git",
+      "state" : {
+        "revision" : "d65f32bfd08fae5910d603028be5dec4f35b3482",
+        "version" : "4.2.2"
+      }
+    },
+    {
+      "identity" : "jwt-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vapor/jwt-kit.git",
+      "state" : {
+        "revision" : "8b3a69c396d2bd0234c4ed4c50cb85da00bdc1bc",
+        "version" : "4.11.0"
       }
     },
     {

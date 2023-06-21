@@ -25,7 +25,7 @@ x-shared_environment: &shared_environment
   DATABASE_NAME: vapor_database
   DATABASE_USERNAME: ${DATABASE_USERNAME}
   DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-  GOOGLE_APPLICATION_CREDENTIALS: /var/lib/firebase/FCM-authkey.json
+  FCM_SERVICE_ACCOUNT_KEY_PATH: /var/lib/firebase/FCM-authkey.json
   
 services:
   app:

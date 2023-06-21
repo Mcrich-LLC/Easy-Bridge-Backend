@@ -3,6 +3,7 @@ import NIOSSL
 import Fluent
 import FluentPostgresDriver
 import Vapor
+import FCM
 
 // configures your application
 public func configure(_ app: Application) async throws {
@@ -33,11 +34,16 @@ public func configure(_ app: Application) async throws {
         try app.autoMigrate().wait()
     }
     Utilities.environment = app.environment
+    
     // register routes
     try routes(app)
     
     Task {
-        StartupNotification.push()
+        if app.environment == .production {
+            StartupNotification.push()
+        }
+        FcmManager.shared.configure(app)
+        BridgeFetch.fetchTweets(db: app.db)
         BridgeFetch.streamTweets(db: app.db)
     }
 }

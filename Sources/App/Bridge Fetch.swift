@@ -12,6 +12,7 @@ import VaporCron
 import FoundationNetworking
 #endif
 import FluentKit
+import FCM
 
 struct BridgeCheckStreamEveryMinuteJob: VaporCronSchedulable {
     typealias T = Void
@@ -58,7 +59,9 @@ struct BridgeFetch {
     }
 
     private static func getPushNotificationList(bridge: BridgeResponse, completion: @escaping (Preferences) -> Void) {
-        guard let url = URL(string: "https://firestore.googleapis.com/v1/projects/easy-bridge-tracker/databases/(default)/documents/Directory/\(bridge.id)?key=\(Secrets.firebaseWebAuthToken)") else { return }
+        guard let url = URL(string: "https://firestore.googleapis.com/v1/projects/easy-bridge-tracker/databases/(default)/documents/Directory/\(bridge.id)?key=\(Secrets.firebaseWebAuthToken)") else {
+            return
+        }
         let request = URLRequest(url: url)
         let task = URLSession.shared.dataTask(with: request) { (responseData, response, error) in
             if let error = error {
@@ -77,7 +80,7 @@ struct BridgeFetch {
                         jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
                     let directory = try jsonDecoder.decode(DirectoryResponse.self, from: responseData)
                     print("result = \(directory)")
-                    for path in directory.fields.subscribedUsers {
+                    for path in directory.fields.subscribedUsers.arrayValue.values.map({ $0.stringValue }) {
                         getPushNotificationPreferences(path: path, completion: completion)
                     }
                 } catch {
@@ -98,62 +101,22 @@ struct BridgeFetch {
     
     static func postBridgeNotification(bridge: Bridge, bridgeDetails: BridgeResponse) {
         getPushNotificationList(bridge: bridgeDetails) { pref in
-            let bridgeId = pref.bridgeIds
+            let bridgeIds = pref.bridgeIds.arrayValue.asStrings()
+            let days = pref.days.arrayValue.asStrings()
             guard let day = Day.currentDay(),
-                  (pref.days).contains(day.rawValue) && (currentTimeIsBetween(startTime: pref.startTime, endTime: pref.endTime) || pref.isAllDay) && pref.bridgeIds.contains(bridgeDetails.id) && pref.isActive
+                  days.contains(day.rawValue) && (currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue) && bridgeIds.contains(bridgeDetails.id) && pref.isActive.booleanValue
             else {
                 return
             }
-            let url = URL(string: "https://fcm.googleapis.com/fcm/send")!
-            
-            var request = URLRequest(url: url)
-            request.httpMethod = "Post"
-            request.allHTTPHeaderFields = [
-                "Content-Type": "application/json",
-                "Authorization": "Bearer \(Secrets.firebaseCloudMessagingBearerToken)"
-            ]
-            let bridgeName = "\(bridgeDetails.bridgeLocation)_\(bridge.name)".replacingOccurrences(of: " Bridge", with: "").replacingOccurrences(of: ",", with: "").replacingOccurrences(of: "st", with: "").replacingOccurrences(of: "nd", with: "").replacingOccurrences(of: "3rd", with: "").replacingOccurrences(of: "th", with: "").replacingOccurrences(of: " ", with: "_")
             func sendNotification(status: String) {
                 print("send status notification")
-                let message = """
-            {
-                "message": {
-                    "token": "\(pref.deviceToken)",
-                    "priority": "high",
-                    "mutable_content": true,
-                    "notification": {
-                        "title": "\(bridgeDetails.bridgeLocation)",
-                        "body": "The \(bridge.name.capitalized) is now \(status)",
-                        "badge": 0,
-                        "sound": "default",
-                        "content_availible": true
-                    },
-                    "data": {
-                        "interruption_level": \(pref.notificationPriorityAsInt()),
-                        "bridge_id": "\(bridgeDetails.id)"
-                    }
-                }
-            }
-            """
-                let data = message.data(using: .utf8)
-                let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
-                    if let error = error {
-                        print("Error making Post request: \(error.localizedDescription)")
-                        return
-                    }
-                    
-                    if let responseCode = (response as? HTTPURLResponse)?.statusCode, let responseData = responseData {
-                        guard responseCode == 200 else {
-                            print("Invalid Firebase response code: \(responseCode)")
-                            return
-                        }
-                        
-                        if let responseJSONData = try? JSONSerialization.jsonObject(with: responseData, options: .allowFragments) {
-                            print("Firebase Response JSON data = \(responseJSONData)")
-                        }
-                    }
-                }
-                task.resume()
+                FcmManager.shared.send(pref.deviceId.stringValue, title: bridgeDetails.bridgeLocation, body: "The \(bridge.name.capitalized) is now \(status)", data: [
+                    "badge": "0",
+                    "sound": "default",
+                    "content_availible": "true",
+                    "interruption_level": "\(pref.notificationPriorityAsInt())",
+                    "bridge_id": "\(bridgeDetails.id)"
+                ])
             }
             switch bridge.status {
             case .up:
@@ -249,6 +212,7 @@ struct BridgeFetch {
                     print("result = \(bridges)")
                     completion(bridges)
                 } catch {
+                    print("error = \(error)")
                 }
             }
         }
@@ -342,10 +306,9 @@ struct BridgeFetch {
         TwitterFetch.shared.startStream { user, response in
             switch response {
             case .success(let feed):
-                for item in feed {
-                    print("tweet.text = \(item.title)")
-                    BridgeFetch.handleBridge(text: item.title, from: user, db: db)
-                }
+                guard let item = feed.first else { return }
+                print("tweet.text = \(item.title)")
+                BridgeFetch.handleBridge(text: item.title, from: user, db: db)
             case .failure(let error):
                 print("error = \(error)")
             }
@@ -380,11 +343,11 @@ struct DirectoryResponse: Codable {
 }
 
 struct Directory: Codable {
-    let subscribedUsers: [String]
+    let subscribedUsers: SubscribedUsers
     
-    init(subscribedUsers: SubscribedUsers) {
-        self.subscribedUsers = subscribedUsers.arrayValue.values.map({ $0.stringValue })
-    }
+//    init(subscribedUsers: SubscribedUsers) {
+//        self.subscribedUsers = subscribedUsers.arrayValue.values.map({ $0.stringValue })
+//    }
 }
 
 struct PrefResponse: Codable {
@@ -395,32 +358,32 @@ struct PrefResponse: Codable {
 }
 
 struct Preferences: Codable {
-    let bridgeIds: [String]
-    let days: [String]
-    let endTime: String
-    let id: String
-    let isActive: Bool
-    let isAllDay: Bool
-    let notificationPriority: String
-    let startTime: String
-    let title: String
-    let deviceToken: String
+    let bridgeIds: BridgeIds
+    let days: Days
+    let endTime: EndTime
+    let id: Id
+    let isActive: IsActive
+    let isAllDay: IsAllDay
+    let notificationPriority: NotificationPriority
+    let startTime: StartTime
+    let title: Title
+    let deviceId: DeviceId
     
-    init(bridgeIds: BridgeIds, days: Days, endTime: EndTime, id: Id, isActive: IsActive, isAllDay: IsAllDay, notificationPriority: NotificationPriority, startTime: StartTime, title: Title, deviceToken: DeviceToken) {
-        self.bridgeIds = bridgeIds.arrayValue.values.map({ $0.stringValue })
-        self.days = days.arrayValue.values.map({ $0.stringValue })
-        self.endTime = endTime.stringValue
-        self.id = id.stringValue
-        self.isActive = isActive.booleanValue
-        self.isAllDay = isAllDay.booleanValue
-        self.notificationPriority = notificationPriority.stringValue
-        self.startTime = startTime.stringValue
-        self.title = title.stringValue
-        self.deviceToken = deviceToken.stringValue
-    }
+//    init(bridgeIds: BridgeIds, days: Days, endTime: EndTime, id: Id, isActive: IsActive, isAllDay: IsAllDay, notificationPriority: NotificationPriority, startTime: StartTime, title: Title, deviceToken: DeviceToken) {
+//        self.bridgeIds = bridgeIds.arrayValue.values.map({ $0.stringValue })
+//        self.days = days.arrayValue.values.map({ $0.stringValue })
+//        self.endTime = endTime.stringValue
+//        self.id = id.stringValue
+//        self.isActive = isActive.booleanValue
+//        self.isAllDay = isAllDay.booleanValue
+//        self.notificationPriority = notificationPriority.stringValue
+//        self.startTime = startTime.stringValue
+//        self.title = title.stringValue
+//        self.deviceToken = deviceToken.stringValue
+//    }
     
     func notificationPriorityAsInt() -> Int {
-        switch self.notificationPriority {
+        switch self.notificationPriority.stringValue {
         case "silent": return 0
         case "normal": return 1
         case "time sensitive": return 2
@@ -440,6 +403,10 @@ struct BridgeIds: Codable {
 
 struct ArrayValue: Codable {
     let values: [Value]
+    
+    func asStrings() -> [String] {
+        self.values.map({ $0.stringValue })
+    }
 }
 
 struct Value: Codable {
@@ -478,7 +445,7 @@ struct Title: Codable {
     let stringValue: String
 }
 
-struct DeviceToken: Codable {
+struct DeviceId: Codable {
     let stringValue: String
 }
 
@@ -523,4 +490,7 @@ extension Date {
         dateFormatter.dateFormat = "EEEE"
         return dateFormatter.string(from: self).lowercased()
     }
+}
+struct AuthKey: Codable {
+    let privateKey: String
 }
