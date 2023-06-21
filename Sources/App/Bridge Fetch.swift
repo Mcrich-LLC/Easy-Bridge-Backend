@@ -278,9 +278,12 @@ struct BridgeFetch {
         TwitterFetch.shared.fetchTweet(username: .seattleDOTBridges) { response in
             switch response {
             case .success(let feed):
-                for item in feed {
-                    print("item.title = \(item.title)")
-                    BridgeFetch.handleBridge(text: item.title, from: .seattleDOTBridges, db: db)
+                guard let rssFeed = feed.atomFeed?.entries else { return }
+                for item in rssFeed {
+                    if let text = item.title {
+                        print("tweet.text = \(text)")
+                        BridgeFetch.handleBridge(text: text, from: .seattleDOTBridges, db: db)
+                    }
                 }
             case .failure(let error):
                 print("error = \(error)")
@@ -289,9 +292,12 @@ struct BridgeFetch {
         TwitterFetch.shared.fetchTweet(username: .SDOTTraffic) { response in
             switch response {
             case .success(let feed):
-                for item in feed {
-                    print("item.title = \(item.title)")
-                    BridgeFetch.handleBridge(text: item.title, from: .SDOTTraffic, db: db)
+                guard let rssFeed = feed.atomFeed?.entries else { return }
+                for item in rssFeed {
+                    if let text = item.title {
+                        print("tweet.text = \(text)")
+                        BridgeFetch.handleBridge(text: text, from: .SDOTTraffic, db: db)
+                    }
                 }
             case .failure(let error):
                 print("error = \(error)")
@@ -304,9 +310,9 @@ struct BridgeFetch {
         TwitterFetch.shared.startStream { user, response in
             switch response {
             case .success(let feed):
-                guard let item = feed.first else { return }
-                print("item.title = \(item.title)")
-                BridgeFetch.handleBridge(text: item.title, from: user, db: db)
+                guard let rssFeed = feed.atomFeed?.entries, let item = rssFeed.first, let text = item.title else { return }
+                BridgeFetch.bridgesUsed.removeAll()
+                BridgeFetch.handleBridge(text: text, from: user, db: db)
             case .failure(let error):
                 print("error = \(error)")
             }
