@@ -20,10 +20,11 @@ class TwitterFetch {
     static var shared = TwitterFetch()
     
     private var isStreaming = false
+    private let streamPollingRate = 500
     func startStream(completion: @escaping (User, Result<[RssItem], Error>) -> Void) {
         self.isStreaming = true
         func repeatBridges() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(50)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(streamPollingRate)) {
                 if self.isStreaming {
                     self.fetchTweet(username: .seattleDOTBridges) { result in
                         completion(.seattleDOTBridges, result)
@@ -35,7 +36,7 @@ class TwitterFetch {
             }
         }
         func repeatTraffic() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(50)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(streamPollingRate)) {
                 if self.isStreaming {
                     self.fetchTweet(username: .SDOTTraffic) { result in
                         completion(.SDOTTraffic, result)
