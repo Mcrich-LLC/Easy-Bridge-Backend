@@ -24,7 +24,7 @@ class TwitterFetch {
     func startStream(completion: @escaping (User, Result<[RssItem], Error>) -> Void) {
         self.isStreaming = true
         func repeatBridges() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(streamPollingRate)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(streamPollingRate)) {
                 if self.isStreaming {
                     self.fetchTweet(username: .seattleDOTBridges) { result in
                         completion(.seattleDOTBridges, result)
@@ -36,7 +36,7 @@ class TwitterFetch {
             }
         }
         func repeatTraffic() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(streamPollingRate)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(streamPollingRate)) {
                 if self.isStreaming {
                     self.fetchTweet(username: .SDOTTraffic) { result in
                         completion(.SDOTTraffic, result)

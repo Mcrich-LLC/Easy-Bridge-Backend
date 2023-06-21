@@ -79,7 +79,6 @@ struct BridgeFetch {
                     let jsonDecoder = JSONDecoder()
                         jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
                     let directory = try jsonDecoder.decode(DirectoryResponse.self, from: responseData)
-                    print("result = \(directory)")
                     for path in directory.fields.subscribedUsers.arrayValue.values.map({ $0.stringValue }) {
                         getPushNotificationPreferences(path: path, completion: completion)
                     }
@@ -157,7 +156,6 @@ struct BridgeFetch {
                 "longitude" : Double(0),
                 "bridge_location" : ""
             ]
-            print("jsonDict = \(jsonDictionary)")
             let data = try! JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
             let task = URLSession.shared.uploadTask(with: request, from: data) { (responseData, response, error) in
                 if let error = error {
@@ -210,7 +208,6 @@ struct BridgeFetch {
                     let jsonDecoder = JSONDecoder()
                     jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
                     let bridges = try jsonDecoder.decode([BridgeResponse].self, from: data)
-                    print("result = \(bridges)")
                     completion(bridges)
                 } catch {
                     print("error = \(error)")
@@ -282,7 +279,7 @@ struct BridgeFetch {
             switch response {
             case .success(let feed):
                 for item in feed {
-                    print("tweet.text = \(item.title)")
+                    print("item.title = \(item.title)")
                     BridgeFetch.handleBridge(text: item.title, from: .seattleDOTBridges, db: db)
                 }
             case .failure(let error):
@@ -293,7 +290,7 @@ struct BridgeFetch {
             switch response {
             case .success(let feed):
                 for item in feed {
-                    print("tweet.text = \(item.title)")
+                    print("item.title = \(item.title)")
                     BridgeFetch.handleBridge(text: item.title, from: .SDOTTraffic, db: db)
                 }
             case .failure(let error):
@@ -308,7 +305,7 @@ struct BridgeFetch {
             switch response {
             case .success(let feed):
                 guard let item = feed.first else { return }
-                print("tweet.text = \(item.title)")
+                print("item.title = \(item.title)")
                 BridgeFetch.handleBridge(text: item.title, from: user, db: db)
             case .failure(let error):
                 print("error = \(error)")
