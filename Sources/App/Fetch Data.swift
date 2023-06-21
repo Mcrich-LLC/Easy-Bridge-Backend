@@ -9,7 +9,6 @@ import Foundation
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
-import FeedKit
 
 enum HttpError: Error {
     case badResponse
@@ -21,7 +20,7 @@ class TwitterFetch {
     static var shared = TwitterFetch()
     
     private var isStreaming = false
-    func startStream(completion: @escaping (User, Result<Feed, ParserError>) -> Void) {
+    func startStream(completion: @escaping (User, Result<[RssItem], Error>) -> Void) {
         self.isStreaming = true
         func repeatBridges() {
             DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(50)) {
@@ -54,11 +53,29 @@ class TwitterFetch {
         self.isStreaming = false
     }
     
-    func fetchTweet(username: User, completion: @escaping (Result<Feed, ParserError>) -> Void) {
-        guard let feedUrl = URL(string: "https://rss-bridge.org/bridge01/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.rawValue)&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&noimgscaling=on&format=Atom") else { return }
-        let parser = FeedParser(URL: feedUrl)
-        let parsedResult = parser.parse()
-        completion(parsedResult)
+    func fetchTweet(username: User, completion: @escaping (Result<[RssItem], Error>) -> Void) {
+        guard let feedUrl = URL(string: "https://rss-bridge.org/bridge01/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.rawValue)&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&noimgscaling=on&format=Json") else { return }
+        
+        URLSession.shared.dataTask(with: feedUrl) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "", code: 0, userInfo: nil))) // Handle invalid data case
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let rssModel = try decoder.decode(RssModel.self, from: data)
+                completion(.success(rssModel.items))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
     }
 }
 
