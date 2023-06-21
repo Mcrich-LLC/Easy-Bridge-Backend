@@ -144,6 +144,10 @@ struct BridgeFetch {
             let updateBridge = bridges.first { bridgeResponse in
                 bridgeResponse.name == bridge.name
             }
+            
+            guard bridge.status.rawValue != updateBridge?.status else {
+                return
+            }
             print("updateBridge = \(updateBridge)")
             let jsonDictionary: [String: Any] = [
                 "id": updateBridge?.id ?? "",
