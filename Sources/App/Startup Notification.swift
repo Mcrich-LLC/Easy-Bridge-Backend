@@ -10,14 +10,23 @@ import Foundation
 import FoundationNetworking
 #endif
 
-class StartupNotification {
-    static func push() {
+class SystemNotifications {
+    static func pushStartup() {
+        push(title: "Easy Bridge Backend", body: "Easy Bridge Backend Started Up")
+    }
+    static func pushShutdown() {
+        push(title: "Easy Bridge Backend", body: "Easy Bridge Backend Shutdown")
+    }
+    static func pushCrash(error: String) {
+        push(title: "Easy Bridge Backend", body: "Easy Bridge Backend Crashed with error: \(error)")
+    }
+    private static func push(title: String, body: String) {
         guard Secrets.pushoverNotificationKey != "get-from-pushover.net" && Secrets.pushoverNotificationKey != "" else {
             print("\n\n\n❌No Pushover Key\n\n\n")
             return
         }
         print("\n\n\n✅Pushover Key: \(Secrets.pushoverNotificationKey)\n\n\n")
-        let url = URL(string: "https://api.pushover.net/1/messages.json?token=\(Secrets.pushoverNotificationKey)&user=um3jmo7mud1b1doesrfhfn93s79gxj&device=Morris_iPhone&title=Easy+Bridge+Backend&message=Easy+Bridge+Backend+Started+Up")!
+        let url = URL(string: "https://api.pushover.net/1/messages.json?token=\(Secrets.pushoverNotificationKey)&user=um3jmo7mud1b1doesrfhfn93s79gxj&device=Morris_iPhone&title=\(title.pushoverEncoding)&message=\(body.pushoverEncoding)")!
 
         var request = URLRequest(url: url)
     request.httpMethod = "POST"
@@ -46,5 +55,11 @@ class StartupNotification {
             }
         }
         task.resume()
+    }
+}
+
+extension String {
+    let pushoverEncoding: String {
+        self.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?.replacingOccurrences(of: " ", with: "+").replacingOccurrences(of: "%20", with: "+")
     }
 }

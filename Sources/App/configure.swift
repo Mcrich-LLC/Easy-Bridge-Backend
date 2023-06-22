@@ -22,7 +22,9 @@ public func configure(_ app: Application) async throws {
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .all,
         allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
-        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin]
+        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin],
+        allowCredentials: true,
+        exposedHeaders: [.accessControlAllowOrigin]
     )
     let cors = CORSMiddleware(configuration: corsConfiguration)
     // cors middleware should come before default error middleware using `at: .beginning`
@@ -40,7 +42,7 @@ public func configure(_ app: Application) async throws {
     
     Task {
         if app.environment == .production {
-            StartupNotification.push()
+            SystemNotifications.pushStartup()
         }
         FcmManager.shared.configure(app)
         BridgeFetch.fetchTweets(db: app.db)
