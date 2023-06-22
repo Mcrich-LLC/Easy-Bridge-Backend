@@ -59,7 +59,7 @@ class SystemNotifications {
 }
 
 extension String {
-    let pushoverEncoding: String {
-        self.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?.replacingOccurrences(of: " ", with: "+").replacingOccurrences(of: "%20", with: "+")
+    var pushoverEncoding: String {
+        self.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?.replacingOccurrences(of: " ", with: "+").replacingOccurrences(of: "%20", with: "+") ?? self
     }
 }
