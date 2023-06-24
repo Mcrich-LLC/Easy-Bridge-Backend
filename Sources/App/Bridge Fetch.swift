@@ -132,6 +132,13 @@ struct BridgeFetch {
     }
     static func updateBridge(bridge: Bridge, db: Database) {
         getBridgeInDb(db: db) { bridges in
+            let updateBridge = bridges.first { bridgeResponse in
+                bridgeResponse.name == bridge.name
+            }
+            
+            guard bridge.status.rawValue != updateBridge?.status else {
+                return
+            }
             let url = URL(string: "http://localhost:\(Secrets.runBindPort)/bridges")!
 
             var request = URLRequest(url: url)
@@ -141,13 +148,6 @@ struct BridgeFetch {
                 "Accept": "application/json",
                 "Authorization": "Bearer \(Secrets.internalEditBearerToken)"
             ]
-            let updateBridge = bridges.first { bridgeResponse in
-                bridgeResponse.name == bridge.name
-            }
-            
-            guard bridge.status.rawValue != updateBridge?.status else {
-                return
-            }
             print("updateBridge = \(updateBridge)")
             let jsonDictionary: [String: Any] = [
                 "id": updateBridge?.id ?? "",
