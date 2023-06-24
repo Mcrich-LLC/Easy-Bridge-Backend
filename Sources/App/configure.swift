@@ -33,17 +33,17 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(UpdateStatus())
     if app.environment == .development {
 //        try app.autoRevert().wait()
-        try app.autoMigrate().wait()
+//        try app.autoMigrate().wait()
     }
     Utilities.environment = app.environment
     
     // register routes
     try routes(app)
     
+    // Add lifecycle delegate.
+    app.lifecycle.use(LifecycleDelegate())
+    
     Task {
-        if app.environment == .production {
-            SystemNotifications.pushStartup()
-        }
         FcmManager.shared.configure(app)
         BridgeFetch.fetchTweets(db: app.db)
         BridgeFetch.streamTweets(db: app.db)
