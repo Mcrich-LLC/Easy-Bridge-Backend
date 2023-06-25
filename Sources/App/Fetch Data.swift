@@ -56,7 +56,7 @@ class TwitterFetch {
     }
     
     func fetchTweet(username: User, completion: @escaping (Result<Feed, ParserError>) -> Void) {
-        guard let feedUrl = URL(string: "https://rss-bridge.org/bridge01/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.rawValue)&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&noimgscaling=on&format=Atom") else { return }
+        guard let feedUrl = URL(string: "https://nitter.net/\(username.rawValue.lowercased())/rss") else { return }
         let parser = FeedParser(URL: feedUrl)
         let parsedResult = parser.parse()
         completion(parsedResult)
