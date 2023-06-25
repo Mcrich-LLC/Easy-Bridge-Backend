@@ -35,6 +35,7 @@ public func configure(_ app: Application) async throws {
 //        try app.autoRevert().wait()
 //        try app.autoMigrate().wait()
     }
+    print("***\n\n\nEnvironment = \(app.environment)\n\n\n***")
     Utilities.environment = app.environment
     
     // register routes
