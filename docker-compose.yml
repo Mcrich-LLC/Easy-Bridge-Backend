@@ -21,6 +21,7 @@ volumes:
 
 x-shared_environment: &shared_environment
   LOG_LEVEL: ${LOG_LEVEL:-debug}
+  APP_PORT: ${APP_PORT}
   DATABASE_HOST: db
   DATABASE_NAME: vapor_database
   DATABASE_USERNAME: ${DATABASE_USERNAME}
@@ -42,9 +43,9 @@ services:
     depends_on:
       - db
     ports:
-      - '8081:8081'
+      - '${APP_PORT}:${APP_PORT}'
     # user: '0' # uncomment to run as root for testing purposes even though Dockerfile defines 'vapor' user.
-    command: ["serve", "--env", "production", "--hostname", "0.0.0.0", "--port", "8081"]
+    command: ["serve", "--env", "production", "--hostname", "0.0.0.0", "--port", "${APP_PORT}"]
     restart: unless-stopped
   migrate:
     image: bridge--backend:latest
@@ -92,7 +93,7 @@ services:
     volumes:
       - ./rss-bridge/config.default.ini.php:/config
     ports:
-      - ${RSS-Bridge_PORT}:80
+      - '${RSS-Bridge_PORT}:80'
     restart: unless-stopped
   # nginx:
   #   image: nginx
