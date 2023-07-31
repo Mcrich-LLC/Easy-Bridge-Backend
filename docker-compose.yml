@@ -26,6 +26,7 @@ x-shared_environment: &shared_environment
   DATABASE_USERNAME: ${DATABASE_USERNAME}
   DATABASE_PASSWORD: ${DATABASE_PASSWORD}
   DATABASE_PORT: ${DATABASE_PORT}
+  RSS-Bridge_PORT: ${RSS-Bridge_PORT}
   FCM_SERVICE_ACCOUNT_KEY_PATH: /var/lib/firebase/FCM-authkey.json
   ENV: ${ENV}
   
@@ -91,7 +92,7 @@ services:
     volumes:
       - ./rss-bridge/config.default.ini.php:/config
     ports:
-      - 3000:80
+      - ${RSS-Bridge_PORT}:80
     restart: unless-stopped
   # nginx:
   #   image: nginx
