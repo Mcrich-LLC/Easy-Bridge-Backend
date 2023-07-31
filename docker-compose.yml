@@ -25,6 +25,7 @@ x-shared_environment: &shared_environment
   DATABASE_NAME: vapor_database
   DATABASE_USERNAME: ${DATABASE_USERNAME}
   DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  DATABASE_PORT: ${DATABASE_PORT}
   FCM_SERVICE_ACCOUNT_KEY_PATH: /var/lib/firebase/FCM-authkey.json
   ENV: ${ENV}
   
@@ -83,7 +84,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: vapor_database
     ports:
-      - '5432:5432'
+      - '${DATABASE_PORT}:${DATABASE_PORT}'
     restart: unless-stopped
   rss-bridge:
     image: rssbridge/rss-bridge:latest
