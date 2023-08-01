@@ -57,6 +57,7 @@ class TwitterFetch {
     
     func fetchTweet(username: User, completion: @escaping (Result<Feed, ParserError>) -> Void) {
         guard let feedUrl = URL(string: "http://localhost:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.rawValue.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=Json") else { return }
+        print("FeedUrl: \(feedUrl.absoluteString)")
         let parser = FeedParser(URL: feedUrl)
         let parsedResult = parser.parse()
         completion(parsedResult)
