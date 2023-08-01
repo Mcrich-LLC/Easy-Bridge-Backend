@@ -99,7 +99,7 @@ class TwitterFetch {
     }
     
     func fetchTweet(username: User, completion: @escaping (RawFeed) -> Void) {
-        guard let feedUrl = URL(string: "http://localhost:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.rawValue.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=Json") else { return }
+        guard let feedUrl = URL(string: "http://rss-bridge:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.rawValue.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=Json") else { return }
         print("FeedUrl: \(feedUrl.absoluteString)")
 
         // Create a URL session
