@@ -256,6 +256,7 @@ struct BridgeFetch {
     }
     
     static func handleBridge(text: String, from user: User, db: Database) {
+        print("Handling message: \(text)")
         switch text {
         case let str where str.contains("Ballard Bridge"):
             BridgeFetch.addBridge(text: text, from: user, name: "Ballard Bridge", db: db)
