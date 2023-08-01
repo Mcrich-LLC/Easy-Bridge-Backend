@@ -38,6 +38,7 @@ public func configure(_ app: Application) async throws {
     }
     print("***\n\n\nEnvironment = \(app.environment)\n\n\n***")
     Utilities.environment = app.environment
+    Utilities.app = app
     
     // register routes
     try routes(app)
