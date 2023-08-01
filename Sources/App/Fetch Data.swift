@@ -22,6 +22,13 @@ class TwitterFetch {
     
     private var isStreaming = false
     private let streamPollingRate = 500
+    func feedUrl(username: String) -> URL? {
+        if Utilities.environment == .development {
+            return URL(string: "http://localhost:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=Json")
+        } else {
+            return URL(string: "http://rss-bridge:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=Json")
+        }
+    }
     
     func stopStream() {
         self.isStreaming = false
@@ -59,7 +66,7 @@ class TwitterFetch {
     }
     
     func fetchTweet(username: User, completion: @escaping (Result<Feed, ParserError>) -> Void) {
-        guard let feedUrl = URL(string: "http://localhost:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.rawValue.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=Json") else { return }
+        guard let feedUrl = self.feedUrl(username: username.rawValue) else { return }
         print("FeedUrl: \(feedUrl.absoluteString)")
         let parser = FeedParser(URL: feedUrl)
         let parsedResult = parser.parse()
@@ -99,7 +106,7 @@ class TwitterFetch {
     }
     
     func fetchTweet(username: User, completion: @escaping (RawFeed) -> Void) {
-        guard let feedUrl = URL(string: "http://rss-bridge:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.rawValue.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=Json") else { return }
+        guard let feedUrl = self.feedUrl(username: username.rawValue) else { return }
         print("FeedUrl: \(feedUrl.absoluteString)")
 
         // Create a URL session
