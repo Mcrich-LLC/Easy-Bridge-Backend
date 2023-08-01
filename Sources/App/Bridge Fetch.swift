@@ -103,7 +103,11 @@ struct BridgeFetch {
             let bridgeIds = pref.bridgeIds.arrayValue.asStrings()
             let days = pref.days.arrayValue.asStrings()
             guard let day = Day.currentDay(),
-                  days.contains(day.rawValue) && (currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue) && bridgeIds.contains(bridgeDetails.id) && pref.isActive.booleanValue
+                  days.contains(day.rawValue),
+                  (currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue),
+                  bridgeIds.contains(bridgeDetails.id),
+                  pref.isActive.booleanValue,
+                  pref.isBeta.booleanValue == (Utilities.environment == .testing)
             else {
                 return
             }
@@ -358,6 +362,7 @@ struct Preferences: Codable {
     let startTime: StartTime
     let title: Title
     let deviceId: DeviceId
+    let isBeta: isBeta
     
 //    init(bridgeIds: BridgeIds, days: Days, endTime: EndTime, id: Id, isActive: IsActive, isAllDay: IsAllDay, notificationPriority: NotificationPriority, startTime: StartTime, title: Title, deviceToken: DeviceToken) {
 //        self.bridgeIds = bridgeIds.arrayValue.values.map({ $0.stringValue })
@@ -437,6 +442,10 @@ struct Title: Codable {
 
 struct DeviceId: Codable {
     let stringValue: String
+}
+
+struct isBeta: Codable {
+    let booleanValue: Bool
 }
 
 enum Day: String, CaseIterable, Codable, Hashable {
