@@ -32,6 +32,7 @@ public func configure(_ app: Application) async throws {
     
     app.migrations.add(UpdateStatus())
     if app.environment == .development {
+        app.http.server.configuration.port = Int(Environment.get("APP_PORT") ?? "8080" ) ?? 8080
 //        try app.autoRevert().wait()
 //        try app.autoMigrate().wait()
     }
