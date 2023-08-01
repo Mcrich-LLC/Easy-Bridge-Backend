@@ -12,13 +12,22 @@ import FoundationNetworking
 
 class SystemNotifications {
     static func pushStartup() {
-        push(title: "Easy Bridge Backend", body: "Easy Bridge Backend Started Up")
+        push(title: "Easy Bridge Backend (Production)", body: "Easy Bridge Backend (Production) Started Up")
     }
     static func pushShutdown() {
-        push(title: "Easy Bridge Backend", body: "Easy Bridge Backend Shutdown")
+        push(title: "Easy Bridge Backend (Production)", body: "Easy Bridge Backend (Production) Shutdown")
     }
     static func pushCrash(error: String) {
-        push(title: "Easy Bridge Backend", body: "Easy Bridge Backend Crashed with error: \(error)")
+        push(title: "Easy Bridge Backend (Production)", body: "Easy Bridge Backend (Production) Crashed with error: \(error)")
+    }
+    static func pushBetaStartup() {
+        push(title: "Easy Bridge Backend(Testing)", body: "Easy Bridge Backend (Testing) Started Up")
+    }
+    static func pushBetaShutdown() {
+        push(title: "Easy Bridge Backend(Testing)", body: "Easy Bridge Backend (Testing) Shutdown")
+    }
+    static func pushBetaCrash(error: String) {
+        push(title: "Easy Bridge Backend (Testing)", body: "Easy Bridge Backend (Testing) Crashed with error: \(error)")
     }
     private static func push(title: String, body: String) {
         guard Secrets.pushoverNotificationKey != "get-from-pushover.net" && Secrets.pushoverNotificationKey != "" else {
