@@ -214,7 +214,7 @@ struct BridgeFetch {
                     let bridges = try jsonDecoder.decode([BridgeResponse].self, from: data)
                     completion(bridges)
                 } catch {
-                    print("error = \(error)")
+                    print("json decoding error = \(error)")
                 }
             }
         }
@@ -290,7 +290,7 @@ struct BridgeFetch {
                     }
                 }
             case .failure(let error):
-                print("error = \(error)")
+                print("error fetching tweet = \(error)")
             }
         }
         TwitterFetch.shared.fetchTweet(username: .SDOTTraffic) { response in
@@ -304,7 +304,7 @@ struct BridgeFetch {
                     }
                 }
             case .failure(let error):
-                print("error = \(error)")
+                print("error fetching tweet = \(error)")
             }
         }
     }
@@ -318,7 +318,7 @@ struct BridgeFetch {
                 BridgeFetch.bridgesUsed.removeAll()
                 BridgeFetch.handleBridge(text: text, from: user, db: db)
             case .failure(let error):
-                print("error = \(error)")
+                print("error streaming tweet = \(error)")
             }
         }
     }
