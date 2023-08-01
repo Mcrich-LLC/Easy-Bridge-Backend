@@ -12,7 +12,7 @@ public func configure(_ app: Application) async throws {
 
     app.databases.use(.postgres(configuration: SQLPostgresConfiguration(
         hostname: Environment.get("DATABASE_HOST") ?? "localhost",
-        port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? SQLPostgresConfiguration.ianaPortNumber,
+        port: 5432,// Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? SQLPostgresConfiguration.ianaPortNumber,
         username: Environment.get("DATABASE_USERNAME") ?? "vapor_username",
         password: Environment.get("DATABASE_PASSWORD") ?? "vapor_password",
         database: Environment.get("DATABASE_NAME") ?? "vapor_database",
@@ -32,7 +32,7 @@ public func configure(_ app: Application) async throws {
     
     app.migrations.add(UpdateStatus())
     if app.environment == .development {
-        app.http.server.configuration.port = Int(Environment.get("APP_PORT") ?? "8080" ) ?? 8080
+//        app.http.server.configuration.port = Int(Environment.get("APP_PORT") ?? "8080" ) ?? 8080
 //        try app.autoRevert().wait()
 //        try app.autoMigrate().wait()
     }
