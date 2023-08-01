@@ -20,13 +20,19 @@ class TwitterFetch {
     
     static var shared = TwitterFetch()
     
+    enum FeedTypes: String {
+        case atom
+        case rss
+        case json
+    }
+    
     private var isStreaming = false
     private let streamPollingRate = 500
-    func feedUrl(username: String) -> URL? {
+    func feedUrl(username: String, format: FeedTypes) -> URL? {
         if Utilities.environment == .development {
-            return URL(string: "http://localhost:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=Atom")
+            return URL(string: "http://localhost:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=\(format.rawValue.capitalized)")
         } else {
-            return URL(string: "http://rss-bridge:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=Atom")
+            return URL(string: "http://rss-bridge:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=\(format.rawValue.capitalized)")
         }
     }
     
@@ -66,7 +72,7 @@ class TwitterFetch {
     }
     
     func fetchTweet(username: User, completion: @escaping (Result<Feed, ParserError>) -> Void) {
-        guard let feedUrl = self.feedUrl(username: username.rawValue) else { return }
+        guard let feedUrl = self.feedUrl(username: username.rawValue, format: .atom) else { return }
         print("FeedUrl: \(feedUrl.absoluteString)")
         let parser = FeedParser(URL: feedUrl)
         let parsedResult = parser.parse()
@@ -106,7 +112,7 @@ class TwitterFetch {
     }
     
     func fetchTweet(username: User, completion: @escaping (RawFeed) -> Void) {
-        guard let feedUrl = self.feedUrl(username: username.rawValue) else { return }
+        guard let feedUrl = self.feedUrl(username: username.rawValue, format: .json) else { return }
         print("FeedUrl: \(feedUrl.absoluteString)")
 
         // Create a URL session
