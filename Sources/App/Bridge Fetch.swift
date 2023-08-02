@@ -186,7 +186,7 @@ struct BridgeFetch {
             guard let updateBridge = updateBridge else {
                 return
             }
-            if Utilities.environment == .production {
+            if Utilities.environment != .development {
                 postBridgeNotification(bridge: bridge, bridgeDetails: updateBridge)
             }
         }
