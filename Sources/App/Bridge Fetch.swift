@@ -103,7 +103,11 @@ struct BridgeFetch {
             let bridgeIds = pref.bridgeIds.arrayValue.asStrings()
             let days = pref.days.arrayValue.asStrings()
             guard let day = Day.currentDay(),
-                  days.contains(day.rawValue) && (currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue) && bridgeIds.contains(bridgeDetails.id) && pref.isActive.booleanValue
+                  days.contains(day.rawValue),
+                  (currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue),
+                  bridgeIds.contains(bridgeDetails.id),
+                  pref.isActive.booleanValue,
+                  pref.isBeta.booleanValue == (Utilities.environment == .testing)
             else {
                 return
             }
@@ -182,7 +186,7 @@ struct BridgeFetch {
             guard let updateBridge = updateBridge else {
                 return
             }
-            if Utilities.environment == .production {
+            if Utilities.environment != .development {
                 postBridgeNotification(bridge: bridge, bridgeDetails: updateBridge)
             }
         }
@@ -214,7 +218,7 @@ struct BridgeFetch {
                     let bridges = try jsonDecoder.decode([BridgeResponse].self, from: data)
                     completion(bridges)
                 } catch {
-                    print("error = \(error)")
+                    print("json decoding error = \(error)")
                 }
             }
         }
@@ -256,6 +260,7 @@ struct BridgeFetch {
     }
     
     static func handleBridge(text: String, from user: User, db: Database) {
+        print("Handling message: \(text)")
         switch text {
         case let str where str.contains("Ballard Bridge"):
             BridgeFetch.addBridge(text: text, from: user, name: "Ballard Bridge", db: db)
@@ -280,31 +285,17 @@ struct BridgeFetch {
         BridgeFetch.bridgesUsed.removeAll()
         print("fetch tweets")
         TwitterFetch.shared.fetchTweet(username: .seattleDOTBridges) { response in
-            switch response {
-            case .success(let feed):
-                guard let rssFeed = feed.atomFeed?.entries else { return }
-                for item in rssFeed {
-                    if let text = item.title {
-                        print("tweet.text = \(text)")
-                        BridgeFetch.handleBridge(text: text, from: .seattleDOTBridges, db: db)
-                    }
-                }
-            case .failure(let error):
-                print("error = \(error)")
+            for item in response.items {
+                let text = item.title
+                print("tweet.text = \(text)")
+                BridgeFetch.handleBridge(text: text, from: .seattleDOTBridges, db: db)
             }
         }
         TwitterFetch.shared.fetchTweet(username: .SDOTTraffic) { response in
-            switch response {
-            case .success(let feed):
-                guard let rssFeed = feed.atomFeed?.entries else { return }
-                for item in rssFeed {
-                    if let text = item.title {
-                        print("tweet.text = \(text)")
-                        BridgeFetch.handleBridge(text: text, from: .SDOTTraffic, db: db)
-                    }
-                }
-            case .failure(let error):
-                print("error = \(error)")
+            for item in response.items {
+                let text = item.title
+                print("tweet.text = \(text)")
+                BridgeFetch.handleBridge(text: text, from: .SDOTTraffic, db: db)
             }
         }
     }
@@ -312,14 +303,9 @@ struct BridgeFetch {
     static func streamTweets(db: Database) {
         print("start stream")
         TwitterFetch.shared.startStream { user, response in
-            switch response {
-            case .success(let feed):
-                guard let rssFeed = feed.atomFeed?.entries, let item = rssFeed.first, let text = item.title else { return }
-                BridgeFetch.bridgesUsed.removeAll()
-                BridgeFetch.handleBridge(text: text, from: user, db: db)
-            case .failure(let error):
-                print("error = \(error)")
-            }
+            guard let text = response.items.first?.title else { return }
+            BridgeFetch.bridgesUsed.removeAll()
+            BridgeFetch.handleBridge(text: text, from: user, db: db)
         }
     }
 }
@@ -376,6 +362,7 @@ struct Preferences: Codable {
     let startTime: StartTime
     let title: Title
     let deviceId: DeviceId
+    let isBeta: isBeta
     
 //    init(bridgeIds: BridgeIds, days: Days, endTime: EndTime, id: Id, isActive: IsActive, isAllDay: IsAllDay, notificationPriority: NotificationPriority, startTime: StartTime, title: Title, deviceToken: DeviceToken) {
 //        self.bridgeIds = bridgeIds.arrayValue.values.map({ $0.stringValue })
@@ -455,6 +442,10 @@ struct Title: Codable {
 
 struct DeviceId: Codable {
     let stringValue: String
+}
+
+struct isBeta: Codable {
+    let booleanValue: Bool
 }
 
 enum Day: String, CaseIterable, Codable, Hashable {

@@ -9,4 +9,5 @@ import Foundation
 import Vapor
 class Utilities {
     static var environment = Environment.production
+    static var app: Application?
 }
