@@ -110,7 +110,6 @@ services:
       - easy-bridge-backend
   nitter:
     image: zedeus/nitter:latest
-    container_name: nitter
     volumes:
       - ./nitter/nitter.conf:/src/nitter.conf:Z,ro
     depends_on:
@@ -132,7 +131,6 @@ services:
 
   nitter-redis:
     image: redis:6-alpine
-    container_name: nitter-redis
     command: redis-server --save 60 1 --loglevel warning
     volumes:
       - nitter-redis:/data
