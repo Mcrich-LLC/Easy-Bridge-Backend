@@ -286,15 +286,13 @@ struct BridgeFetch {
         BridgeFetch.bridgesUsed.removeAll()
         print("fetch tweets")
         TwitterFetch.shared.fetchTweet(username: .seattleDOTBridges) { response in
-            for item in response.items {
-                let text = item.title
+            for text in response {
                 print("tweet.text = \(text)")
                 BridgeFetch.handleBridge(text: text, from: .seattleDOTBridges, db: db)
             }
         }
         TwitterFetch.shared.fetchTweet(username: .SDOTTraffic) { response in
-            for item in response.items {
-                let text = item.title
+            for text in response {
                 print("tweet.text = \(text)")
                 BridgeFetch.handleBridge(text: text, from: .SDOTTraffic, db: db)
             }
@@ -304,14 +302,8 @@ struct BridgeFetch {
     static func streamTweets(db: Database) {
         print("start stream")
         TwitterFetch.shared.startStream { user, response in
-            switch response {
-            case .failure(let error):
-                print(error)
-            case .success(let feed):
-                guard let items = feed.atomFeed?.entries, let item = items.first, let text = item.title else { return }
-                BridgeFetch.bridgesUsed.removeAll()
-                BridgeFetch.handleBridge(text: text, from: user, db: db)
-            }
+            BridgeFetch.bridgesUsed.removeAll()
+            BridgeFetch.handleBridge(text: response, from: user, db: db)
         }
     }
 }
