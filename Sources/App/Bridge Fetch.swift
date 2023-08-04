@@ -13,6 +13,7 @@ import FoundationNetworking
 #endif
 import FluentKit
 import FCM
+import FeedKit
 
 struct BridgeCheckStreamEveryMinuteJob: VaporCronSchedulable {
     typealias T = Void
@@ -285,15 +286,13 @@ struct BridgeFetch {
         BridgeFetch.bridgesUsed.removeAll()
         print("fetch tweets")
         TwitterFetch.shared.fetchTweet(username: .seattleDOTBridges) { response in
-            for item in response.items {
-                let text = item.title
+            for text in response {
                 print("tweet.text = \(text)")
                 BridgeFetch.handleBridge(text: text, from: .seattleDOTBridges, db: db)
             }
         }
         TwitterFetch.shared.fetchTweet(username: .SDOTTraffic) { response in
-            for item in response.items {
-                let text = item.title
+            for text in response {
                 print("tweet.text = \(text)")
                 BridgeFetch.handleBridge(text: text, from: .SDOTTraffic, db: db)
             }
@@ -303,9 +302,8 @@ struct BridgeFetch {
     static func streamTweets(db: Database) {
         print("start stream")
         TwitterFetch.shared.startStream { user, response in
-            guard let text = response.items.first?.title else { return }
             BridgeFetch.bridgesUsed.removeAll()
-            BridgeFetch.handleBridge(text: text, from: user, db: db)
+            BridgeFetch.handleBridge(text: response, from: user, db: db)
         }
     }
 }
