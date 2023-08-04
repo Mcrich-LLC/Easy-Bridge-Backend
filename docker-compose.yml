@@ -112,7 +112,7 @@ services:
     image: zedeus/nitter:latest
     container_name: nitter
     volumes:
-      - ./nitter.conf:/src/nitter.conf:Z,ro
+      - ./nitter./nitter.conf:/src/nitter.conf:Z,ro
     depends_on:
       - nitter-redis
     restart: always
