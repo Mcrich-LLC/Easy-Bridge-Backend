@@ -31,9 +31,9 @@ class TwitterFetch {
     private let streamPollingRate = 500
     func feedUrl(username: String, format: FeedTypes) -> URL? {
         if Utilities.environment == .development {
-            return URL(string: "http://localhost:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=\(format.rawValue.capitalized)")
+            return URL(string: "http://localhost:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&nopinned=on&nopic=on&noimg=on&format=\(format.rawValue.capitalized)")
         } else {
-            return URL(string: "http://rss-bridge:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&noretweet=on&nopinned=on&nopic=on&noimg=on&format=\(format.rawValue.capitalized)")
+            return URL(string: "http://rss-bridge:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&nopinned=on&nopic=on&noimg=on&format=\(format.rawValue.capitalized)")
         }
     }
     
