@@ -6,7 +6,7 @@ class TwitterEngineeringBridge extends FeedExpander
     const NAME = 'Twitter Engineering Blog';
     const URI = 'https://blog.twitter.com/engineering/';
     const DESCRIPTION = 'Returns the newest articles.';
-    const CACHE_TIMEOUT = 0; // 0h
+    const CACHE_TIMEOUT = 1; // 1 second
 
     protected function parseItem($item)
     {
