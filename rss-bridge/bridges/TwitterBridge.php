@@ -7,7 +7,7 @@ class TwitterBridge extends BridgeAbstract
     const API_URI = 'https://api.twitter.com';
     const GUEST_TOKEN_USES = 1000000;
     const GUEST_TOKEN_EXPIRY = 10800; // 3hrs
-    const CACHE_TIMEOUT = 1; // 1 second
+    const CACHE_TIMEOUT = 0; // 0 second
     const DESCRIPTION = 'returns tweets';
     const MAINTAINER = 'arnd-s';
     const PARAMETERS = [
