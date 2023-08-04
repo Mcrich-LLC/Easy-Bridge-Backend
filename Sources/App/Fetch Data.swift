@@ -192,7 +192,7 @@ class TwitterFetch {
     }
     
     func fetchTweet(username: User, completion: @escaping ([String]) -> Void) {
-        let url = URL(string: "http://nitter:8080\(username.rawValue)")!
+        let url = URL(string: "http://nitter:8080/\(username.rawValue)")!
         
         // Create a URL session
         let session = URLSession.shared
