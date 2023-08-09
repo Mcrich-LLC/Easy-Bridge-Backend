@@ -36,6 +36,13 @@ class TwitterFetch {
             return URL(string: "http://rss-bridge:\(Secrets.rssBridgePort)/?action=display&bridge=TwitterBridge&context=By+username&u=\(username.lowercased())&norep=on&nopinned=on&nopic=on&noimg=on&format=\(format.rawValue.capitalized)")
         }
     }
+    func nitterUrl(username: String) -> URL {
+        if Utilities.environment == .development {
+            return URL(string: "http://nitter.net/\(username.lowercased())")!
+        } else {
+            return URL(string: "http://nitter:8080/\(username.lowercased())")!
+        }
+    }
     
     func stopStream() {
         self.isStreaming = false
@@ -192,13 +199,12 @@ class TwitterFetch {
     }
     
     func fetchTweet(username: User, completion: @escaping ([String]) -> Void) {
-        let url = URL(string: "http://nitter:8080/\(username.rawValue)")!
         
         // Create a URL session
         let session = URLSession.shared
 
         // Create a data task to perform the GET request
-        let task = session.dataTask(with: url) { data, response, error in
+        let task = session.dataTask(with: nitterUrl(username: username.rawValue)) { data, response, error in
             if let error = error {
                 print("Error: \(error)")
                 return

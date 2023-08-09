@@ -108,12 +108,13 @@ struct BridgeFetch {
                   (currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue),
                   bridgeIds.contains(bridgeDetails.id),
                   pref.isActive.booleanValue,
-                  pref.isBeta.booleanValue == (Utilities.environment == .testing)
+                  pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development)
             else {
+                print("***SEND NOTIFICTION***\n\nDid not send to id: \(pref.id.stringValue)\n\n***SEND NOTIFICTION***")
                 return
             }
             func sendNotification(status: String) {
-                print("send status notification")
+                print("***SEND NOTIFICTION***\n\nSending to id: \(pref.id.stringValue)\n\n***SEND NOTIFICTION***")
                 FcmManager.shared.send(pref.deviceId.stringValue, title: bridgeDetails.bridgeLocation, body: "The \(bridge.name.capitalized) is now \(status)", data: [
                     "badge": "0",
                     "sound": "default",
@@ -187,9 +188,9 @@ struct BridgeFetch {
             guard let updateBridge = updateBridge else {
                 return
             }
-            if Utilities.environment != .development {
+//            if Utilities.environment != .development {
                 postBridgeNotification(bridge: bridge, bridgeDetails: updateBridge)
-            }
+//            }
         }
     }
     static func getBridgeInDb(db: Database, completion: @escaping ([BridgeResponse]) -> Void) {
