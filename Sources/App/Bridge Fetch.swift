@@ -107,6 +107,7 @@ struct BridgeFetch {
             let days = pref.days.arrayValue.asStrings()
             
             print("***SEND NOTIFICATION***\n\n")
+            print("bridgeId = \(bridgeDetails.id)")
             print("day = \(Day.currentDay()!)")
             print("days.contains(day.rawValue) = \(days.contains(Day.currentDay()!.rawValue))")
             print("(currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue) = \((currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue))")
