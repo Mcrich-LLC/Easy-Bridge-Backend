@@ -110,11 +110,11 @@ struct BridgeFetch {
                   pref.isActive.booleanValue,
                   pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development)
             else {
-                print("***SEND NOTIFICTION***\n\nDid not send to id: \(pref.id.stringValue)\n\n***SEND NOTIFICTION***")
+                print("***SEND NOTIFICATION***\n\nDid not send to id: \(pref.id.stringValue)\n\n")
                 return
             }
             func sendNotification(status: String) {
-                print("***SEND NOTIFICTION***\n\nSending to id: \(pref.id.stringValue)\n\n***SEND NOTIFICTION***")
+                print("***SEND NOTIFICATION***\n\nSending to id: \(pref.id.stringValue)\n\n")
                 FcmManager.shared.send(pref.deviceId.stringValue, title: bridgeDetails.bridgeLocation, body: "The \(bridge.name.capitalized) is now \(status)", data: [
                     "badge": "0",
                     "sound": "default",
