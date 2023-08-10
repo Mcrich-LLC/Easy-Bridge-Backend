@@ -118,12 +118,12 @@ struct BridgeFetch {
                   pref.isActive.booleanValue,
                   pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development)
             else {
-                print("\n\nDid not send to id: \(pref.id.stringValue)\n\n")
+                print("\n\nDid not send to id: \(pref.deviceId.stringValue)\n\n")
                 return
             }
             
             func sendNotification(status: String) {
-                print("\n\nSending to id: \(pref.id.stringValue)\n\n")
+                print("\n\nSending to id: \(pref.deviceId.stringValue)\n\n")
                 FcmManager.shared.send(pref.deviceId.stringValue, title: bridgeDetails.bridgeLocation, body: "The \(bridge.name.capitalized) is now \(status)", data: [
                     "badge": "0",
                     "sound": "default",
@@ -197,9 +197,9 @@ struct BridgeFetch {
             guard let updateBridge = updateBridge else {
                 return
             }
-//            if Utilities.environment != .development {
+            if Utilities.environment != .development {
                 postBridgeNotification(bridge: bridge, bridgeDetails: updateBridge)
-//            }
+            }
         }
     }
     static func getBridgeInDb(db: Database, completion: @escaping ([BridgeResponse]) -> Void) {
