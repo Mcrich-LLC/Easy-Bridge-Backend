@@ -103,6 +103,14 @@ struct BridgeFetch {
         getPushNotificationList(bridge: bridgeDetails) { pref in
             let bridgeIds = pref.bridgeIds.arrayValue.asStrings()
             let days = pref.days.arrayValue.asStrings()
+            
+            print("***SEND NOTIFICATION***\n\n")
+            print("day = \(Day.currentDay()!)")
+            print("days.contains(day.rawValue) = \(days.contains(Day.currentDay()!.rawValue))")
+            print("(currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue) = \((currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue))")
+            print("bridgeIds.contains(bridgeDetails.id) = \(bridgeIds.contains(bridgeDetails.id))")
+            print("pref.isActive.booleanValue = \(pref.isActive.booleanValue)")
+            print("pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development) = \(pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development))")
             guard let day = Day.currentDay(),
                   days.contains(day.rawValue),
                   (currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue),
@@ -110,11 +118,12 @@ struct BridgeFetch {
                   pref.isActive.booleanValue,
                   pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development)
             else {
-                print("***SEND NOTIFICATION***\n\nDid not send to id: \(pref.id.stringValue)\n\n")
+                print("\n\nDid not send to id: \(pref.id.stringValue)\n\n")
                 return
             }
+            
             func sendNotification(status: String) {
-                print("***SEND NOTIFICATION***\n\nSending to id: \(pref.id.stringValue)\n\n")
+                print("\n\nSending to id: \(pref.id.stringValue)\n\n")
                 FcmManager.shared.send(pref.deviceId.stringValue, title: bridgeDetails.bridgeLocation, body: "The \(bridge.name.capitalized) is now \(status)", data: [
                     "badge": "0",
                     "sound": "default",
