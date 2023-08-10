@@ -80,8 +80,10 @@ struct BridgeFetch {
                     let jsonDecoder = JSONDecoder()
                         jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
                     let directory = try jsonDecoder.decode(DirectoryResponse.self, from: responseData)
-                    for path in directory.fields.subscribedUsers.arrayValue.values.map({ $0.stringValue }) {
+                    var sentNotificationIds: [String] = []
+                    for path in directory.fields.subscribedUsers.arrayValue.values.map({ $0.stringValue }) where !sentNotificationIds.contains(path) {
                         getPushNotificationPreferences(path: path, completion: completion)
+                        sentNotificationIds.append(path)
                     }
                 } catch {
                     print(error)
