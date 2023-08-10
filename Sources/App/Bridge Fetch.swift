@@ -98,6 +98,9 @@ struct BridgeFetch {
               let end = Formatter.today.date(from: endTime) else {
             return false
         }
+        print("Start Time = \(start)")
+        print("End Time = \(end)")
+        print("DateInterval(start: start, end: end).contains(Date()) = \(DateInterval(start: start, end: end).contains(Date()))")
         return DateInterval(start: start, end: end).contains(Date())
     }
     
