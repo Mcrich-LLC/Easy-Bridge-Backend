@@ -93,14 +93,46 @@ struct BridgeFetch {
         task.resume()
     }
     
+    private static func convertTimeStringToDate(timeString: String) -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "hh:mm a" // Use 'hh' for 12-hour format, 'a' for AM/PM indicator
+        
+        if let timeDate = dateFormatter.date(from: timeString) {
+            let currentDate = Date()
+            var calendar = Calendar.current
+            
+            calendar.timeZone = TimeZone(identifier: "America/Los_Angeles") ?? TimeZone.current // Set the time zone to your Pacific Time
+            
+            let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: timeDate)
+            let dateComponents = calendar.dateComponents([.year, .month, .day], from: currentDate)
+            
+            var combinedComponents = DateComponents()
+            combinedComponents.year = dateComponents.year
+            combinedComponents.month = dateComponents.month
+            combinedComponents.day = dateComponents.day
+            combinedComponents.hour = timeComponents.hour
+            combinedComponents.minute = timeComponents.minute
+            combinedComponents.second = timeComponents.second
+            
+            return calendar.date(from: combinedComponents)
+        }
+        
+        return nil
+    }
+
     private static func currentTimeIsBetween(startTime: String, endTime: String) -> Bool {
-        guard let start = Formatter.today.date(from: startTime),
-              let end = Formatter.today.date(from: endTime) else {
+        guard let start = convertTimeStringToDate(timeString: startTime),
+              let end = convertTimeStringToDate(timeString: endTime) else {
             return false
         }
-        print("Start Time = \(start)")
-        print("End Time = \(end)")
-        print("DateInterval(start: start, end: end).contains(Date()) = \(DateInterval(start: start, end: end).contains(Date()))")
+        
+        print("Start Time = \(startTime)")
+        print("End Time = \(endTime)")
+        
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone(identifier: "America/Los_Angeles") ?? TimeZone.current // Set the time zone to Pacific Time
+        
+        print("DateInterval(start: start, end: end) = \(DateInterval(start: start, end: end))")
         return DateInterval(start: start, end: end).contains(Date())
     }
     
