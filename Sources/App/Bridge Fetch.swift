@@ -100,7 +100,7 @@ struct BridgeFetch {
         }
         print("Start Time = \(start)")
         print("End Time = \(end)")
-        print("DateInterval(start: start, end: end) = \(DateInterval(start: start, end: end))")
+        print("DateInterval(start: start, end: end).contains(Date()) = \(DateInterval(start: start, end: end).contains(Date()))")
         return DateInterval(start: start, end: end).contains(Date())
     }
     
@@ -113,7 +113,8 @@ struct BridgeFetch {
             print("bridgeId = \(bridgeDetails.id)")
             print("day = \(Day.currentDay()!)")
             print("days.contains(day.rawValue) = \(days.contains(Day.currentDay()!.rawValue))")
-            print("(currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue) = \((currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue))")
+            print("currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue = \(currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue))")
+            print("pref.isAllDay.booleanValue = \(pref.isAllDay.booleanValue)")
             print("bridgeIds.contains(bridgeDetails.id) = \(bridgeIds.contains(bridgeDetails.id))")
             print("pref.isActive.booleanValue = \(pref.isActive.booleanValue)")
             print("pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development) = \(pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development))")
