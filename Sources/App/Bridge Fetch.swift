@@ -166,7 +166,7 @@ struct BridgeFetch {
                 FcmManager.shared.send(pref.deviceId.stringValue, title: bridgeDetails.bridgeLocation, body: "The \(bridge.name.capitalized) is now \(status)", data: [
                     "badge": "0",
                     "sound": "default",
-                    "mutable-content": "true",
+                    "mutable_content": "1",
                     "priority": "high",
                     "interruption_level": "\(pref.notificationPriorityAsInt())",
                     "bridge_id": "\(bridgeDetails.id)"
