@@ -135,6 +135,7 @@ struct BridgeFetch {
         calendar.timeZone = timeZone
         
         print("DateInterval(start: start, end: end) = \(DateInterval(start: start, end: end))")
+        print("Is current time between \(startTime) and \(endTime): \(currentTimeIsBetween(startTime: startTime, endTime: endTime))")
         return DateInterval(start: start, end: end).contains(Date())
     }
     
