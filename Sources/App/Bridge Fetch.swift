@@ -135,7 +135,6 @@ struct BridgeFetch {
         calendar.timeZone = timeZone
         
         print("DateInterval(start: start, end: end) = \(DateInterval(start: start, end: end))")
-        print("Is current time between \(startTime) and \(endTime): \(currentTimeIsBetween(startTime: startTime, endTime: endTime))")
         return DateInterval(start: start, end: end).contains(Date())
     }
     
@@ -149,6 +148,7 @@ struct BridgeFetch {
             print("day = \(Day.currentDay()!)")
             print("days.contains(day.rawValue) = \(days.contains(Day.currentDay()!.rawValue))")
             print("currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue = \(currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue))")
+            print("Is current time between \(startTime) and \(endTime): \(currentTimeIsBetween(startTime: startTime, endTime: endTime))")
             print("pref.isAllDay.booleanValue = \(pref.isAllDay.booleanValue)")
             print("bridgeIds.contains(bridgeDetails.id) = \(bridgeIds.contains(bridgeDetails.id))")
             print("pref.isActive.booleanValue = \(pref.isActive.booleanValue)")
@@ -239,9 +239,9 @@ struct BridgeFetch {
             guard let updateBridge = updateBridge else {
                 return
             }
-            if Utilities.environment != .development {
+//            if Utilities.environment != .development {
                 postBridgeNotification(bridge: bridge, bridgeDetails: updateBridge)
-            }
+//            }
         }
     }
     static func getBridgeInDb(db: Database, completion: @escaping ([BridgeResponse]) -> Void) {
