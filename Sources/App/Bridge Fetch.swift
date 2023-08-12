@@ -101,7 +101,8 @@ struct BridgeFetch {
             let currentDate = Date()
             var calendar = Calendar.current
             
-            calendar.timeZone = TimeZone(identifier: "America/Los_Angeles") ?? TimeZone.current // Set the time zone to your Pacific Time
+            guard let timeZone = TimeZone(abbreviation: "PDT") else { return nil } // Set the time zone to your local time zone
+            calendar.timeZone = timeZone
             
             let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: timeDate)
             let dateComponents = calendar.dateComponents([.year, .month, .day], from: currentDate)
@@ -130,7 +131,8 @@ struct BridgeFetch {
         print("End Time = \(endTime)")
         
         var calendar = Calendar.current
-        calendar.timeZone = TimeZone(identifier: "America/Los_Angeles") ?? TimeZone.current // Set the time zone to Pacific Time
+        guard let timeZone = TimeZone(abbreviation: "PDT") else { return false } // Set the time zone to your local time zone
+        calendar.timeZone = timeZone
         
         print("DateInterval(start: start, end: end) = \(DateInterval(start: start, end: end))")
         return DateInterval(start: start, end: end).contains(Date())
