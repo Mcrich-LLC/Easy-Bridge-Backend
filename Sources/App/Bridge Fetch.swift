@@ -93,50 +93,33 @@ struct BridgeFetch {
         task.resume()
     }
     
-    private static func convertTimeStringToDate(timeString: String) -> Date? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "hh:mm a" // Use 'hh' for 12-hour format, 'a' for AM/PM indicator
-        
-        if let timeDate = dateFormatter.date(from: timeString) {
-            let currentDate = Date()
-            var calendar = Calendar.current
-            
-            guard let timeZone = TimeZone(identifier: "America/Los_Angeles") /* Use the Olson identifier for PDT */ else { return nil }
-            calendar.timeZone = timeZone
-            
-            let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: timeDate)
-            let dateComponents = calendar.dateComponents([.year, .month, .day], from: currentDate)
-            
-            var combinedComponents = DateComponents()
-            combinedComponents.year = dateComponents.year
-            combinedComponents.month = dateComponents.month
-            combinedComponents.day = dateComponents.day
-            combinedComponents.hour = timeComponents.hour
-            combinedComponents.minute = timeComponents.minute
-            combinedComponents.second = timeComponents.second
-            
-            return calendar.date(from: combinedComponents)
-        }
-        
-        return nil
+    private static func convertUTCToPDT(utcDate: Date) -> Date {
+        let timeZone = TimeZone(identifier: "America/Los_Angeles")!
+        let calendar = Calendar.current
+        return utcDate.addingTimeInterval(TimeInterval(timeZone.secondsFromGMT(for: utcDate)))
     }
 
     private static func currentTimeIsBetween(startTime: String, endTime: String) -> Bool {
-        guard let start = convertTimeStringToDate(timeString: startTime),
-              let end = convertTimeStringToDate(timeString: endTime) else {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "hh:mm a"
+        dateFormatter.timeZone = TimeZone(identifier: "America/Los_Angeles") // Use the Olson identifier for PDT
+        
+        let currentDate = Date()
+        let currentTimeString = dateFormatter.string(from: currentDate)
+        
+        guard let startTimeDate = dateFormatter.date(from: startTime),
+              let endTimeDate = dateFormatter.date(from: endTime),
+              let currentTimeDate = dateFormatter.date(from: currentTimeString) else {
             return false
         }
         
-        print("Start Time = \(startTime)")
-        print("End Time = \(endTime)")
+        let convertedStartTime = convertUTCToPDT(utcDate: startTimeDate)
+        let convertedEndTime = convertUTCToPDT(utcDate: endTimeDate)
+        let convertedCurrentTime = convertUTCToPDT(utcDate: currentTimeDate)
         
-        var calendar = Calendar.current
-        guard let timeZone = TimeZone(identifier: "America/Los_Angeles") /* Use the Olson identifier for PDT */ else { return false }
-        calendar.timeZone = timeZone
-        
-        print("DateInterval(start: start, end: end) = \(DateInterval(start: start, end: end))")
-        return DateInterval(start: start, end: end).contains(Date())
+        return convertedStartTime <= convertedCurrentTime && convertedCurrentTime <= convertedEndTime
     }
+
     
     static func postBridgeNotification(bridge: Bridge, bridgeDetails: BridgeResponse) {
         getPushNotificationList(bridge: bridgeDetails) { pref in
