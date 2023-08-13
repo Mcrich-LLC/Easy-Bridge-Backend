@@ -117,6 +117,10 @@ struct BridgeFetch {
         let convertedEndTime = convertUTCToPDT(utcDate: endTimeDate)
         let convertedCurrentTime = convertUTCToPDT(utcDate: currentTimeDate)
         
+        print("Start Time = \(convertedStartTime)")
+        print("End Time = \(convertedEndTime)")
+        print("DateInterval(start: start, end: end) = \(DateInterval(start: convertedStartTime, end: convertedEndTime))")
+        
         return convertedStartTime <= convertedCurrentTime && convertedCurrentTime <= convertedEndTime
     }
 
