@@ -143,11 +143,14 @@ struct BridgeFetch {
             let bridgeIds = pref.bridgeIds.arrayValue.asStrings()
             let days = pref.days.arrayValue.asStrings()
             
+            let startTime = pref.startTime.stringValue
+            let endTime = pref.endTime.stringValue
+            
             print("***SEND NOTIFICATION***\n\n")
             print("bridgeId = \(bridgeDetails.id)")
             print("day = \(Day.currentDay()!)")
             print("days.contains(day.rawValue) = \(days.contains(Day.currentDay()!.rawValue))")
-            print("currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue = \(currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue))")
+            print("currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue = \(currentTimeIsBetween(startTime: startTime, endTime: endTime))")
             print("Is current time between \(startTime) and \(endTime): \(currentTimeIsBetween(startTime: startTime, endTime: endTime))")
             print("pref.isAllDay.booleanValue = \(pref.isAllDay.booleanValue)")
             print("bridgeIds.contains(bridgeDetails.id) = \(bridgeIds.contains(bridgeDetails.id))")
@@ -155,7 +158,7 @@ struct BridgeFetch {
             print("pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development) = \(pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development))")
             guard let day = Day.currentDay(),
                   days.contains(day.rawValue),
-                  (currentTimeIsBetween(startTime: pref.startTime.stringValue, endTime: pref.endTime.stringValue) || pref.isAllDay.booleanValue),
+                  (currentTimeIsBetween(startTime: startTime, endTime: endTime) || pref.isAllDay.booleanValue),
                   bridgeIds.contains(bridgeDetails.id),
                   pref.isActive.booleanValue,
                   pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development)
