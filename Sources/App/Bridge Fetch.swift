@@ -167,7 +167,7 @@ struct BridgeFetch {
                         badge: 0,
                         sound: "default",
                         priority: pref.notificationPriority.stringValue,
-                        contentAvailable: false,
+                        contentAvailable: true,
                         mutableContent: true
                     )/* [
                     "mutable_content": "true",
