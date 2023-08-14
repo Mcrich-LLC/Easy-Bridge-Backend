@@ -45,7 +45,6 @@ services:
       <<: *shared_environment
     depends_on:
       - db
-      - rss-bridge
       - nitter
     ports:
       - '${APP_PORT}:${APP_PORT}'
