@@ -21,26 +21,16 @@ class FcmManager {
         app.fcm.configuration = .envServiceAccountKey
     }
     
-    func send(_ token: String, title: String, body: String, data: FCMApnsApsObject) {
+    func send(_ token: String, title: String, body: String, data: [String : String]? = nil, apns: FCMApnsApsObject? = nil) {
         guard let app else {
             return
         }
         let info = FCMNotification(title: title, body: body)
         var apnsHeaders: [String : String]? {
-            guard let mutableContent = data.mutableContent else { return nil }
+            guard let mutableContent = apns?.mutableContent else { return nil }
             return ["mutable-content" : "\(mutableContent)"]
         }
-        let message = FCMMessage(token: token, notification: info, apns: FCMApnsConfig(headers: apnsHeaders, aps: data))
-        app.fcm.send(message).map { result in
-            print(result)
-        }
-    }
-    func send(_ token: String, title: String, body: String, data: [String : String]) {
-        guard let app else {
-            return
-        }
-        let info = FCMNotification(title: title, body: body)
-        let message = FCMMessage(token: token, notification: info, data: data)
+        let message = FCMMessage(token: token, notification: info, data: data, apns: FCMApnsConfig(headers: apnsHeaders, aps: apns))
         app.fcm.send(message).map { result in
             print(result)
         }

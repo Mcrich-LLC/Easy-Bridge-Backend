@@ -163,11 +163,20 @@ struct BridgeFetch {
                     pref.deviceId.stringValue,
                     title: bridgeDetails.bridgeLocation,
                     body: "The \(bridge.name.capitalized) is now \(status)",
-                    data: FCMApnsApsObject(
+                    data: [
+                        "badge": "0",
+                        "sound": "default",
+                        "priority": "high",
+                        "interruption_level": "\(pref.notificationPriorityAsInt())",
+                        "bridge_id": "\(bridgeDetails.id)",
+                        "mutable_content" : "true"
+                    ],
+                    apns: FCMApnsApsObject(
                         badge: 0,
                         sound: "default",
                         priority: pref.notificationPriority.stringValue,
                         contentAvailable: false,
+                        threadId: bridgeDetails.id
                         mutableContent: true
                     ))
 //                FcmManager.shared.send(
