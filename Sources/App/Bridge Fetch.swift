@@ -176,7 +176,7 @@ struct BridgeFetch {
                         sound: "default",
                         priority: pref.notificationPriority.stringValue,
                         contentAvailable: false,
-                        threadId: bridgeDetails.id
+                        threadId: bridgeDetails.id,
                         mutableContent: true
                     ))
 //                FcmManager.shared.send(
