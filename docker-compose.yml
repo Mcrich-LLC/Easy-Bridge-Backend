@@ -63,7 +63,6 @@ services:
       <<: *shared_environment
     depends_on:
       - db
-      - rss-bridge
     command: ["migrate", "--yes"]
     deploy:
       replicas: 0
