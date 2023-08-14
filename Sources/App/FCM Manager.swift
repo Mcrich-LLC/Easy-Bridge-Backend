@@ -26,7 +26,11 @@ class FcmManager {
             return
         }
         let info = FCMNotification(title: title, body: body)
-        let message = FCMMessage(token: token, notification: info, apns: FCMApnsConfig(aps: data))
+        var apnsHeaders: [String : String]? {
+            guard let mutableContent = data.mutableContent else { return nil }
+            return ["mutable_content" : "\(mutableContent)"]
+        }
+        let message = FCMMessage(token: token, notification: info, apns: FCMApnsConfig(headers: apnsHeaders, aps: data))
         app.fcm.send(message).map { result in
             print(result)
         }
