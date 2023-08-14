@@ -155,6 +155,9 @@ struct BridgeFetch {
             }
             
             func sendNotification(status: String) {
+                guard Utilities.environment != .development || pref.deviceId.stringValue == Secrets.devDeviceFCMId else {
+                    return
+                }
                 print("\n\nSending to id: \(pref.deviceId.stringValue)\n\n")
                 FcmManager.shared.send(pref.deviceId.stringValue, title: bridgeDetails.bridgeLocation, body: "The \(bridge.name.capitalized) is now \(status)", data: [
                     "badge": "0",

@@ -101,13 +101,6 @@ services:
     restart: always
     networks:
       - easy-bridge-backend
-  rss-bridge:
-    image: rssbridge/rss-bridge:latest
-    volumes:
-      - ./rss-bridge/config.default.ini.php:/config
-    restart: always
-    networks:
-      - easy-bridge-backend
   nitter:
     image: zedeus/nitter:latest
     volumes:
