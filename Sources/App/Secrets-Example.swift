@@ -24,4 +24,5 @@ enum SecretsExample {
     static let runBindPort = 8082
     static let rssBridgePort = 3000
     static let pushoverNotificationKey = "get-from-pushover.net"
+    static let devDeviceFCMId = "firebase-fcm-notification-id"
 }
