@@ -21,12 +21,12 @@ class FcmManager {
         app.fcm.configuration = .envServiceAccountKey
     }
     
-    func send(_ token: String, title: String, body: String, data: [String : String]) {
+    func send(_ token: String, title: String, body: String, data: FCMApnsApsObject) {
         guard let app else {
             return
         }
         let info = FCMNotification(title: title, body: body)
-        let message = FCMMessage(token: token, notification: info, data: data)
+        let message = FCMMessage(token: token, notification: info, apns: FCMApnsConfig(aps: data))
         app.fcm.send(message).map { result in
             print(result)
         }

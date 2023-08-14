@@ -159,14 +159,24 @@ struct BridgeFetch {
                     return
                 }
                 print("\n\nSending to id: \(pref.deviceId.stringValue)\n\n")
-                FcmManager.shared.send(pref.deviceId.stringValue, title: bridgeDetails.bridgeLocation, body: "The \(bridge.name.capitalized) is now \(status)", data: [
+                FcmManager.shared.send(
+                    pref.deviceId.stringValue,
+                    title: bridgeDetails.bridgeLocation,
+                    body: "The \(bridge.name.capitalized) is now \(status)",
+                    data: FCMApnsApsObject(
+                        badge: 0,
+                        sound: "default",
+                        priority: pref.notificationPriority.stringValue,
+                        contentAvailable: false,
+                        mutableContent: true
+                    )/* [
                     "mutable_content": "true",
                     "badge": "0",
                     "sound": "default",
                     "priority": "high",
                     "interruption_level": "\(pref.notificationPriorityAsInt())",
                     "bridge_id": "\(bridgeDetails.id)"
-                ])
+                ] */)
             }
             switch bridge.status {
             case .up:
