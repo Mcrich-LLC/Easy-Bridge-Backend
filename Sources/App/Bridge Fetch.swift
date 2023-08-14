@@ -169,14 +169,20 @@ struct BridgeFetch {
                         priority: pref.notificationPriority.stringValue,
                         contentAvailable: false,
                         mutableContent: true
-                    )/* [
-                    "mutable_content": "true",
-                    "badge": "0",
-                    "sound": "default",
-                    "priority": "high",
-                    "interruption_level": "\(pref.notificationPriorityAsInt())",
-                    "bridge_id": "\(bridgeDetails.id)"
-                ] */)
+                    ))
+//                FcmManager.shared.send(
+//                    pref.deviceId.stringValue,
+//                    title: bridgeDetails.bridgeLocation,
+//                    body: "The \(bridge.name.capitalized) is now \(status)",
+//                    data: [
+//                        "badge": "0",
+//                        "sound": "default",
+//                        "priority": "high",
+//                        "interruption_level": "\(pref.notificationPriorityAsInt())",
+//                        "bridge_id": "\(bridgeDetails.id)",
+//                        "mutable-content" : "1"
+//                    ]
+//                )
             }
             switch bridge.status {
             case .up:
