@@ -12,6 +12,14 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 # Set up a build area
 WORKDIR /build
 
+# Download JSON file and place it in the root directory
+RUN apt-get update && apt-get install -y wget \
+    && wget -O ./FCM-authkey.json "$fcm_auth_url" \  # Use double quotes around the environment variable
+    && apt-get remove -y wget \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+    
 # First just resolve dependencies.
 # This creates a cached layer that can be reused
 # as long as your Package.swift/Package.resolved
