@@ -33,6 +33,12 @@ x-shared_environment: &shared_environment
   DATABASE_PORT: ${DATABASE_PORT}
   FCM_SERVICE_ACCOUNT_KEY_PATH: /var/lib/firebase/FCM-authkey.json
   ENV: ${ENV}
+  internalEditBearerToken: ${internalEditBearerToken}
+  fcm_auth_url: ${fcm_auth_url}
+  firebaseCloudMessagingBearerToken: ${firebaseCloudMessagingBearerToken}
+  firebaseWebAuthToken: ${firebaseWebAuthToken}
+  pushoverNotificationKey: ${pushoverNotificationKey}
+  devDeviceFCMId: ${devDeviceFCMId}
   
 services:
   app:
