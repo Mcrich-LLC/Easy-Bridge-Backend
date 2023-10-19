@@ -14,7 +14,7 @@ WORKDIR /build
 
 # Download JSON file and place it in the root directory
 RUN apt-get update && apt-get install -y wget \
-    && wget -O /app/file.json $GITHUB_JSON_URL \
+    && wget -O ./FCM-authkey.json $fcm_auth_url \
     && apt-get remove -y wget \
     && apt-get autoremove -y \
     && apt-get clean \
