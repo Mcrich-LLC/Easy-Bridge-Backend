@@ -12,6 +12,9 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 # Set up a build area
 WORKDIR /build
 
+# Download JSON file and place it in the root directory
+RUN curl -L -o ./FCM-authkey.json $fcm_auth_url
+
 # First just resolve dependencies.
 # This creates a cached layer that can be reused
 # as long as your Package.swift/Package.resolved
