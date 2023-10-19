@@ -11,10 +11,6 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 
 # Set up a build area
 WORKDIR /build
-
-# Download JSON file and place it in the root directory
-RUN apt-get update && apt-get install -y wget \
-    && wget -O ./FCM-authkey.json "$fcm_auth_url" \  # Use double quotes around the environment variable
     
 # First just resolve dependencies.
 # This creates a cached layer that can be reused
