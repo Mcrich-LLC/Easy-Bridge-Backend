@@ -14,7 +14,7 @@ WORKDIR /build
 
 # Download JSON file and place it in the root directory
 RUN apt-get update && apt-get install -y wget \
-    && wget -O ./FCM-authkey.json $fcm_auth_url \
+    && wget -O ./FCM-authkey.json "$fcm_auth_url" \  # Use double quotes around the environment variable
     && apt-get remove -y wget \
     && apt-get autoremove -y \
     && apt-get clean \
