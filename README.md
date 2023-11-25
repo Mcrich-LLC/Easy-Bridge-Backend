@@ -24,9 +24,9 @@ Check out the full app: [Easy Bridge Tracker](https://github.com/Mcrich-LLC/Easy
 
 `git remote add upstream https://github.com/Mcrich23/Seattle-Bridge-Backend.git`
 
-* Setup the [Secrets.swift file](#setting-up-secrets)
+* Setup your [.env file](#setting-up-secrets)
 
-### Setting Up Secrets
+### Setting Up You Env
 * Create an API key (yourself) for vapor to update itself and also get one from your firebase project (for push notification support)
 * Once you have your API keys, create a new file called `Secrets.swift` in the Seattle-Bridge-Backend directory of the project, by typing `touch Secrets.swift` in Terminal
 * Use the file `Secrets-Example.swift` as the format for your Secrets.swift file. Paste your API key into the `bearerToken` property
