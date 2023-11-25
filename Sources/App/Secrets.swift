@@ -1,4 +1,5 @@
 import Foundation
+import Vapor
 
 // swiftlint:disable superfluous_disable_command line_length
 
