@@ -79,7 +79,6 @@ class TwitterFetch {
         // Create a URL session
         let session = URLSession.shared
         let url = nitterUrl(username: username.rawValue)
-        print("Nitter url: \(url)")
 
         // Create a data task to perform the GET request
         let task = session.dataTask(with: url) { data, response, error in
@@ -141,6 +140,7 @@ class TwitterFetch {
                 }
             } else {
                 // Unsuccessful request
+                print("Nitter url: \(url)")
                 print("Request failed with status code: \(httpResponse.statusCode)")
             }
         }
