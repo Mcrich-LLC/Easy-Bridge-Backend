@@ -15,8 +15,8 @@ enum Secrets {
             return false
         }
     }
-    static let runBindPort = Environment.get("APP_PORT") ?? 8080
-    static let rssBridgePort = Environment.get("RSS_BRIDGE_PORT") ?? 3000
+    static let runBindPort = Int(Environment.get("APP_PORT") ?? "8080")
+    static let rssBridgePort = Int(Environment.get("RSS_BRIDGE_PORT") ?? "3000")
     static let pushoverNotificationKey = Environment.get("pushoverNotificationKey") ?? "pushoverNotificationKey"
     static let devDeviceFCMId = Environment.get("devDeviceFCMId") ?? "devDeviceFCMId"
 }
