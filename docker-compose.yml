@@ -34,7 +34,6 @@ x-shared_environment: &shared_environment
   FCM_SERVICE_ACCOUNT_KEY_PATH: /var/lib/firebase/FCM-authkey.json
   ENV: ${ENV}
   internalEditBearerToken: ${internalEditBearerToken}
-  fcm_auth_url: ${fcm_auth_url}
   firebaseCloudMessagingBearerToken: ${firebaseCloudMessagingBearerToken}
   firebaseWebAuthToken: ${firebaseWebAuthToken}
   pushoverNotificationKey: ${pushoverNotificationKey}
@@ -107,6 +106,9 @@ services:
       - easy-bridge-backend
   nitter:
     image: zedeus/nitter:latest
+    container_name: nitter
+    ports:
+      - "127.0.0.1:8080:8080" # Replace with "8080:8080" if you don't use a reverse proxy
     volumes:
       - ./nitter/nitter.conf:/src/nitter.conf:Z,ro
     depends_on:
@@ -128,6 +130,7 @@ services:
 
   nitter-redis:
     image: redis:6-alpine
+    container_name: nitter-redis
     command: redis-server --save 60 1 --loglevel warning
     volumes:
       - nitter-redis:/data
