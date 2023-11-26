@@ -31,11 +31,11 @@ class TwitterFetch {
     private let streamPollingRate = 500
     
     func nitterUrl(username: String) -> URL {
-        if Utilities.environment == .development {
+//        if Utilities.environment == .development {
             return URL(string: "http://nitter.net/\(username.lowercased())")!
-        } else {
-            return URL(string: "http://nitter:8080/\(username.lowercased())")!
-        }
+//        } else {
+//            return URL(string: "http://nitter:8080/\(username.lowercased())")!
+//        }
     }
     
     func stopStream() {

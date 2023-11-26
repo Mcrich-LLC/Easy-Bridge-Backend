@@ -50,7 +50,7 @@ services:
       <<: *shared_environment
     depends_on:
       - db
-      - nitter
+#      - nitter
     ports:
       - '${APP_PORT}:${APP_PORT}'
     # user: '0' # uncomment to run as root for testing purposes even though Dockerfile defines 'vapor' user.
@@ -104,48 +104,48 @@ services:
     restart: always
     networks:
       - easy-bridge-backend
-  nitter:
-    image: zedeus/nitter:latest
-    container_name: nitter
-    volumes:
-      - ./nitter/nitter.conf:/src/nitter.conf:Z,ro
-    depends_on:
-      - nitter-redis
-    restart: always
-    healthcheck:
-      test: wget -nv --tries=1 --spider http://127.0.0.1:8080/Jack/status/20 || exit 1
-      interval: 30s
-      timeout: 5s
-      retries: 2
-    user: "998:998"
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    networks:
-      - easy-bridge-backend
-
-  nitter-redis:
-    image: redis:6-alpine
-    container_name: nitter-redis
-    command: redis-server --save 60 1 --loglevel warning
-    volumes:
-      - nitter-redis:/data
-    restart: always
-    healthcheck:
-      test: redis-cli ping
-      interval: 30s
-      timeout: 5s
-      retries: 2
-    user: "999:1000"
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    networks:
-      - easy-bridge-backend
+#  nitter:
+#    image: zedeus/nitter:latest
+#    container_name: nitter
+#    volumes:
+#      - ./nitter/nitter.conf:/src/nitter.conf:Z,ro
+#    depends_on:
+#      - nitter-redis
+#    restart: always
+#    healthcheck:
+#      test: wget -nv --tries=1 --spider http://127.0.0.1:8080/Jack/status/20 || exit 1
+#      interval: 30s
+#      timeout: 5s
+#      retries: 2
+#    user: "998:998"
+#    read_only: true
+#    security_opt:
+#      - no-new-privileges:true
+#    cap_drop:
+#      - ALL
+#    networks:
+#      - easy-bridge-backend
+#
+#  nitter-redis:
+#    image: redis:6-alpine
+#    container_name: nitter-redis
+#    command: redis-server --save 60 1 --loglevel warning
+#    volumes:
+#      - nitter-redis:/data
+#    restart: always
+#    healthcheck:
+#      test: redis-cli ping
+#      interval: 30s
+#      timeout: 5s
+#      retries: 2
+#    user: "999:1000"
+#    read_only: true
+#    security_opt:
+#      - no-new-privileges:true
+#    cap_drop:
+#      - ALL
+#    networks:
+#      - easy-bridge-backend
   # nginx:
   #   image: nginx
   #   volumes:
