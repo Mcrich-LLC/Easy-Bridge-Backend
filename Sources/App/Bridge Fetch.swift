@@ -148,7 +148,7 @@ struct BridgeFetch {
                   (currentTimeIsBetween(startTime: startTime, endTime: endTime) || pref.isAllDay.booleanValue),
                   bridgeIds.contains(bridgeDetails.id),
                   pref.isActive.booleanValue,
-                  pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development)
+                  pref.isBeta.booleanValue == (/*Utilities.environment == .testing || */Utilities.environment == .development)
             else {
                 print("\n\nDid not send to id: \(pref.deviceId.stringValue)\n\n")
                 return
