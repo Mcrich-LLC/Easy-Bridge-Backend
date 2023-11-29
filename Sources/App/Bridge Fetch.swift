@@ -263,8 +263,7 @@ struct BridgeFetch {
         }
     }
     static func getBridgeInDb(db: Database, completion: @escaping ([BridgeResponse]) -> Void) {
-        var request = URLRequest(url: URL(string: "http://localhost:\(Secrets.runBindPort)/bridges")!,
-                                 timeoutInterval: Double.infinity)
+        var request = URLRequest(url: URL(string: "http://localhost:\(Secrets.runBindPort)/bridges")!, timeoutInterval: Double.infinity)
         
         request.httpMethod = "GET"
         

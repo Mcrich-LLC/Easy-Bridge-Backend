@@ -28,7 +28,7 @@ class TwitterFetch {
     }
     
     private var isStreaming = false
-    private let streamPollingRate = 1500
+    private let streamPollingRate = 500
     
     func nitterUrl(username: String) -> URL {
 //        if Utilities.environment == .development {
