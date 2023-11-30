@@ -142,7 +142,7 @@ struct BridgeFetch {
             print("pref.isAllDay.booleanValue = \(pref.isAllDay.booleanValue)")
             print("bridgeIds.contains(bridgeDetails.id) = \(bridgeIds.contains(bridgeDetails.id))")
             print("pref.isActive.booleanValue = \(pref.isActive.booleanValue)")
-            print("pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development) = \(pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development))")
+            print("pref.isBeta.booleanValue == (/*Utilities.environment == .testing ||*/ Utilities.environment == .development) = \(pref.isBeta.booleanValue == (/*Utilities.environment == .testing ||*/ Utilities.environment == .development))")
             guard let day = Day.currentDay(),
                   days.contains(day.rawValue),
                   (currentTimeIsBetween(startTime: startTime, endTime: endTime) || pref.isAllDay.booleanValue),
