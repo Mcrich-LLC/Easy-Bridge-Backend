@@ -142,13 +142,13 @@ struct BridgeFetch {
             print("pref.isAllDay.booleanValue = \(pref.isAllDay.booleanValue)")
             print("bridgeIds.contains(bridgeDetails.id) = \(bridgeIds.contains(bridgeDetails.id))")
             print("pref.isActive.booleanValue = \(pref.isActive.booleanValue)")
-            print("pref.isBeta.booleanValue == (/*Utilities.environment == .testing ||*/ Utilities.environment != .development) = \(pref.isBeta.booleanValue == (/*Utilities.environment == .testing ||*/ Utilities.environment != .development))")
+//            print("pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment != .development) = \(pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment = .development))")
             guard let day = Day.currentDay(),
                   days.contains(day.rawValue),
                   (currentTimeIsBetween(startTime: startTime, endTime: endTime) || pref.isAllDay.booleanValue),
                   bridgeIds.contains(bridgeDetails.id),
-                  pref.isActive.booleanValue,
-                  pref.isBeta.booleanValue == (/*Utilities.environment == .testing || */Utilities.environment != .development)
+                  pref.isActive.booleanValue/*,
+                  pref.isBeta.booleanValue == (Utilities.environment == .testing || Utilities.environment == .development)*/
             else {
                 print("\n\nDid not send to id: \(pref.deviceId.stringValue)\n\n")
                 return
