@@ -7,7 +7,7 @@ Check out the full app: [Easy Bridge Tracker](https://github.com/Mcrich-LLC/Easy
 ## Using The Database
 
 ### Accessing The Database
-* Access the database at [http://backend.mcrich23.com/bridges](http://backend.mcrich23.com/bridges)
+* Access the database at [https://backend.mcrich23.com/bridges](http://backend.mcrich23.com/bridges)
 
 ### Contributing To The Database
 * Email [support@mcrich23.com](mailto:support@mcrich23.com) for a bearer token to add or force update bridges
