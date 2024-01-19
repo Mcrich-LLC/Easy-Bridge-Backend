@@ -29,4 +29,4 @@ Check out the full app: [Easy Bridge Tracker](https://github.com/Mcrich-LLC/Easy
 ### Setting Up You Env
 * Create an API key (yourself) for vapor to update itself and also get one from your firebase project (for push notification support)
 * Once you have your API keys, create a new file called `.env` in the Seattle-Bridge-Backend directory of the project, by typing `touch .env` in Terminal
-* Use the file `.env-example` as the format for your `.env` file.
+* Use the file [.env-example](./.env-example) as the format for your `.env` file.
