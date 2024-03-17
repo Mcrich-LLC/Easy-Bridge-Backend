@@ -30,7 +30,7 @@ class TwitterFetch {
     private let streamPollingRate = 10000
     
     func scraperUrl(username: String) -> URL {
-        if false {//Utilities.environment == .development {
+        if Utilities.environment == .development {
             return URL(string: "http://127.0.0.1:5000/tweets/\(username.lowercased())")!
         } else {
             return URL(string: "http://twitter_scraper:5000/tweets\(username.lowercased())")!
