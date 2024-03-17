@@ -9,3 +9,4 @@ db.sqlite
 .env
 seattle-bridge-backend.pub
 FCM-authkey.json
+accounts.db

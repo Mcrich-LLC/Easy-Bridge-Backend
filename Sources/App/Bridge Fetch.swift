@@ -360,10 +360,12 @@ struct BridgeFetch {
                 BridgeFetch.handleBridge(text: text, from: .seattleDOTBridges, db: db)
             }
         }
-        TwitterFetch.shared.fetchTweet(username: .SDOTTraffic) { response in
-            for text in response {
-                print("tweet.text = \(text)")
-                BridgeFetch.handleBridge(text: text, from: .SDOTTraffic, db: db)
+        DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + .milliseconds(1500)) {
+            TwitterFetch.shared.fetchTweet(username: .SDOTTraffic) { response in
+                for text in response {
+                    print("tweet.text = \(text)")
+                    BridgeFetch.handleBridge(text: text, from: .SDOTTraffic, db: db)
+                }
             }
         }
     }
@@ -537,8 +539,8 @@ enum Day: String, CaseIterable, Codable, Hashable {
 }
 
 enum User: String {
-    case seattleDOTBridges = "SDOTBridges"
-    case SDOTTraffic = "SDOTTraffic"
+    case seattleDOTBridges = "2768116808"
+    case SDOTTraffic = "936366064518160384"
 }
 
 extension Formatter {

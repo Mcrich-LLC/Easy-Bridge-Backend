@@ -10,7 +10,6 @@ import Foundation
 import FoundationNetworking
 #endif
 import FeedKit
-import SwiftSoup
 
 enum HttpError: Error {
     case badResponse
@@ -28,14 +27,14 @@ class TwitterFetch {
     }
     
     private var isStreaming = false
-    private let streamPollingRate = 500
+    private let streamPollingRate = 10000
     
-    func nitterUrl(username: String) -> URL {
-//        if Utilities.environment == .development {
-            return URL(string: "https://nitter.net/\(username.lowercased())")!
-//        } else {
-//            return URL(string: "http://nitter:8080/\(username.lowercased())")!
-//        }
+    func scraperUrl(username: String) -> URL {
+        if false {//Utilities.environment == .development {
+            return URL(string: "http://127.0.0.1:5000/tweets/\(username.lowercased())")!
+        } else {
+            return URL(string: "http://twitter_scraper:5000/tweets\(username.lowercased())")!
+        }
     }
     
     func stopStream() {
@@ -59,7 +58,7 @@ class TwitterFetch {
             }
         }
         func repeatTraffic() {
-            DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + .milliseconds(streamPollingRate)) {
+            DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + .milliseconds(Int(Double(streamPollingRate)*1.5.rounded()))) {
                 if self.isStreaming {
                     self.fetchTweet(username: .SDOTTraffic) { result in
                         completion(.SDOTTraffic, result.first ?? "")
@@ -78,10 +77,11 @@ class TwitterFetch {
         
         // Create a URL session
         let session = URLSession.shared
-        let url = nitterUrl(username: username.rawValue)
+        let url = scraperUrl(username: username.rawValue)
+        let request = URLRequest(url: url)
 
         // Create a data task to perform the GET request
-        let task = session.dataTask(with: url) { data, response, error in
+        let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Error: \(error)")
                 return
@@ -99,39 +99,11 @@ class TwitterFetch {
                 if let data = data {
                     // Parse and process the response data
                     do {
-                        guard let html = String(data: data, encoding: .utf8) else { return }
-                        let doc: Document = try SwiftSoup.parse(html)
-                        let divs: Elements = try doc.select("div")
-                        for div in divs {
-                            let divClass: String = try div.attr("class")
-                            if divClass.lowercased().contains("timeline-container") {
-                                guard let timeline = try div.select("div").first()?.select("div") else { return }
-                                var count = 0
-                                var array: [String] = [] {
-                                    didSet {
-                                        if array.count == count {
-                                            completion(array)
-                                        }
-                                    }
-                                }
-                                for timelineItem in timeline {
-                                    let timelineItemClass: String = try timelineItem.attr("class")
-                                    if timelineItemClass.lowercased().contains("timeline-item") {
-                                        guard let body = try div.select("div").first()?.select("div") else { return }
-                                        count = body.count
-                                        for bodyItem in body {
-                                            let bodyItemClass: String = try bodyItem.attr("class")
-                                            if bodyItemClass.lowercased().contains("tweet-content media-body") {
-                                                let text = try bodyItem.text()
-                                                array.append(text)
-//                                                completion(["The Fremont Bridge has closed to traffic at 4:59:55 PM"])
-//                                                completion(["The Fremont Bridge has reopened to traffic at 4:59:55 PM"])
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        let jsonDecoder = JSONDecoder()
+                        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
+                        
+                        let tweets = try jsonDecoder.decode([String].self, from: data)
+                        completion(tweets)
                     } catch {
                         print("error parsing tweet: \(error)")
                     }
@@ -140,7 +112,6 @@ class TwitterFetch {
                 }
             } else {
                 // Unsuccessful request
-                print("Nitter url: \(url)")
                 print("Request failed with status code: \(httpResponse.statusCode)")
             }
         }
@@ -157,19 +128,4 @@ extension String {
         jsonEncoder.keyEncodingStrategy = .convertToSnakeCase
         return try? jsonEncoder.encode(data)
     }
-}
-
-struct Item: Codable {
-    let id: URL
-    let title: String
-    let author: Author
-}
-
-struct Author: Codable {
-    let name: String
-}
-
-struct RawFeed: Codable {
-    let title: String
-    let items: [Item]
 }
