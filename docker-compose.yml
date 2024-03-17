@@ -51,6 +51,9 @@ x-shared_environment: &shared_environment
 services:
   app:
     image: bridge--backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.vapor
     volumes:
       - ./FCM-authkey.json:/var/lib/firebase/FCM-authkey.json
     environment:
@@ -67,6 +70,9 @@ services:
 
   migrate:
     image: bridge--backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.vapor
     volumes:
       - ./FCM-authkey.json:/var/lib/firebase/FCM-authkey.json
     environment:
@@ -82,6 +88,9 @@ services:
 
   revert:
     image: bridge--backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.vapor
     volumes:
       - ./FCM-authkey.json:/var/lib/firebase/FCM-authkey.json
     environment:
@@ -111,13 +120,13 @@ services:
       - easy-bridge-backend
 
   twitter_scraper:
+    image: twitter-scraper:latest
     build:
       context: .
       dockerfile: Dockerfile.flask
     volumes:
       - ./twitter-scraper:/twitter-scraper
     environment:
-      APP_PORT: 5000  # Assuming Flask app runs on port 5000
       <<: *shared_environment
       # Add other environment variables specific to Flask if needed
     networks:
