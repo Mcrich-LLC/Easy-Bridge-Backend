@@ -1,3 +1,19 @@
+# Docker Compose file for Vapor
+#
+# Install Docker on your system to run and test
+# your Vapor app in a production-like environment.
+#
+# Note: This file is intended for testing and does not
+# implement best practices for a production deployment.
+#
+# Learn more: https://docs.docker.com/compose/reference/
+#
+#   Build images: docker-compose build
+#      Start app: docker-compose up app
+# Start database: docker-compose up db
+# Run migrations: docker-compose run migrate
+#       Stop all: docker-compose down (add -v to wipe db)
+#
 version: '3.7'
 
 volumes:
@@ -34,9 +50,7 @@ x-shared_environment: &shared_environment
   
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.vapor
+    image: bridge--backend:latest
     volumes:
       - ./FCM-authkey.json:/var/lib/firebase/FCM-authkey.json
     environment:
@@ -52,9 +66,7 @@ services:
       - easy-bridge-backend
 
   migrate:
-    build:
-      context: .
-      dockerfile: Dockerfile.vapor
+    image: bridge--backend:latest
     volumes:
       - ./FCM-authkey.json:/var/lib/firebase/FCM-authkey.json
     environment:
@@ -69,9 +81,7 @@ services:
       - easy-bridge-backend
 
   revert:
-    build:
-      context: .
-      dockerfile: Dockerfile.vapor
+    image: bridge--backend:latest
     volumes:
       - ./FCM-authkey.json:/var/lib/firebase/FCM-authkey.json
     environment:
