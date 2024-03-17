@@ -30,7 +30,7 @@ RUN swift build -c release --static-swift-stdlib
 # ================================
 # Final Docker image for Vapor
 # ================================
-FROM ubuntu:jammy
+FROM ubuntu:22.04
 
 # Install essential system packages
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
