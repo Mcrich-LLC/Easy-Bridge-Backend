@@ -31,9 +31,9 @@ class TwitterFetch {
     
     func scraperUrl(username: String) -> URL {
         if Utilities.environment == .development {
-            return URL(string: "http://127.0.0.1:5000/tweets/\(username.lowercased())")!
+            return URL(string: "http://127.0.0.1:5001/tweets/\(username.lowercased())")!
         } else {
-            return URL(string: "http://twitter_scraper:5000/tweets\(username.lowercased())")!
+            return URL(string: "http://twitter_scraper:5000/tweets/\(username.lowercased())")!
         }
     }
     
@@ -83,7 +83,7 @@ class TwitterFetch {
         // Create a data task to perform the GET request
         let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("Error: \(error)")
+                print("Tweet Fetch Error: \(error)")
                 return
             }
 

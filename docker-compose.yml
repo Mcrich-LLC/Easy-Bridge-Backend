@@ -126,6 +126,8 @@ services:
       dockerfile: Dockerfile.flask
     volumes:
       - ./twitter-scraper:/twitter-scraper
+    ports:
+      - "5001:5000"
     environment:
       <<: *shared_environment
       # Add other environment variables specific to Flask if needed
