@@ -43,13 +43,13 @@ class TwitterFetch {
     
     // nitter.net Fetch
     
-    func startStream(completion: @escaping (User, String) -> Void) {
+    func startStream(completion: @escaping (User, [String]) -> Void) {
         self.isStreaming = true
         func repeatBridges() {
             DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + .milliseconds(streamPollingRate)) {
                 if self.isStreaming {
                     self.fetchTweet(username: .seattleDOTBridges) { result in
-                        completion(.seattleDOTBridges, result.first ?? "")
+                        completion(.seattleDOTBridges, result)
                     }
                     repeatBridges()
                 } else {
@@ -61,7 +61,7 @@ class TwitterFetch {
             DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + .milliseconds(Int(Double(streamPollingRate)*1.5.rounded()))) {
                 if self.isStreaming {
                     self.fetchTweet(username: .SDOTTraffic) { result in
-                        completion(.SDOTTraffic, result.first ?? "")
+                        completion(.SDOTTraffic, result)
                     }
                     repeatBridges()
                 } else {

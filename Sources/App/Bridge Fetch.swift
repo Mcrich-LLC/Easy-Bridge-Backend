@@ -374,7 +374,9 @@ struct BridgeFetch {
         print("start stream")
         TwitterFetch.shared.startStream { user, response in
             BridgeFetch.bridgesUsed.removeAll()
-            BridgeFetch.handleBridge(text: response, from: user, db: db)
+            for r in response {
+                BridgeFetch.handleBridge(text: r, from: user, db: db)
+            }
         }
     }
 }
