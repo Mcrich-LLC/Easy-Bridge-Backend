@@ -29,4 +29,4 @@ if [ ! -f "$your_dump_file" ]; then
 fi
 
 # Command to execute
-cat "$your_dump_file" | docker exec -i $your_db_container psql -U $your_db_user -d $your_db_name
+cat "$your_dump_file" | sudo docker exec -i $your_db_container psql -U $your_db_user -d $your_db_name
