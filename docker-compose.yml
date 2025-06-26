@@ -119,17 +119,17 @@ services:
     networks:
       - easy-bridge-backend
 
-  twitter_scraper:
-    image: twitter-scraper:latest
-    build:
-      context: .
-      dockerfile: Dockerfile.flask
-    volumes:
-      - ./twitter-scraper:/twitter-scraper
-    ports:
-      - "5001:5000"
-    environment:
-      <<: *shared_environment
-      # Add other environment variables specific to Flask if needed
-    networks:
-      - easy-bridge-backend
+#  twitter_scraper:
+#    image: twitter-scraper:latest
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.flask
+#    volumes:
+#      - ./twitter-scraper:/twitter-scraper
+#    ports:
+#      - "5001:5000"
+#    environment:
+#      <<: *shared_environment
+#      # Add other environment variables specific to Flask if needed
+#    networks:
+#      - easy-bridge-backend
