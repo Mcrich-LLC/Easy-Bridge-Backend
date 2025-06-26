@@ -59,7 +59,7 @@ services:
     environment:
       <<: *shared_environment
     depends_on:
-      - twitter_scraper
+#      - twitter_scraper
       - db
     ports:
       - '${APP_PORT}:${APP_PORT}'
