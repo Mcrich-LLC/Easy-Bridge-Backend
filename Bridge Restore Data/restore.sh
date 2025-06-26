@@ -7,7 +7,7 @@ script_dir=$(dirname "$0")
 read -p "Enter your Docker container name: " your_db_container
 
 # Check if the container exists
-docker inspect $your_db_container > /dev/null 2>&1
+sudo docker inspect $your_db_container > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Docker container '$your_db_container' not found."
     exit 1
