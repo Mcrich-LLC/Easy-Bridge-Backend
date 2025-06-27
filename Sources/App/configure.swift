@@ -46,8 +46,9 @@ public func configure(_ app: Application) async throws {
     // Add lifecycle delegate.
     app.lifecycle.use(LifecycleDelegate())
     
+    FcmManager.shared.configure(app)
+    
     Task {
-        FcmManager.shared.configure(app)
         BridgeFetch.fetchTweets(db: app.db)
         BridgeFetch.streamTweets(db: app.db)
     }
