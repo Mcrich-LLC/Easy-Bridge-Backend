@@ -14,6 +14,7 @@ let package = Package(
         .package(url: "https://github.com/MihaelIsaev/VaporCron", from: "2.6.0"),
         .package(url: "https://github.com/MihaelIsaev/FCM", from: "2.8.0"),
         .package(url: "https://github.com/nmdias/FeedKit.git", from: "9.1.2"),
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.8.8"),
     ],
     targets: [
         .executableTarget(
@@ -25,6 +26,7 @@ let package = Package(
                 .product(name: "VaporCron", package: "VaporCron"),
                 .product(name: "FCM", package: "FCM"),
                 .product(name: "FeedKit", package: "FeedKit"),
+                .product(name: "SwiftSoup", package: "SwiftSoup"),
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

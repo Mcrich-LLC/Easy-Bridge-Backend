@@ -374,9 +374,7 @@ struct BridgeFetch {
         print("start stream")
         TwitterFetch.shared.startStream { user, response in
             BridgeFetch.bridgesUsed.removeAll()
-            for r in response {
-                BridgeFetch.handleBridge(text: r, from: user, db: db)
-            }
+            BridgeFetch.handleBridge(text: response, from: user, db: db)
         }
     }
 }
@@ -541,8 +539,17 @@ enum Day: String, CaseIterable, Codable, Hashable {
 }
 
 enum User: String {
-    case seattleDOTBridges = "2768116808"
-    case SDOTTraffic = "936366064518160384"
+    case seattleDOTBridges = "SDOTbridges"
+    case SDOTTraffic
+    
+    var id: String {
+        switch self {
+        case .seattleDOTBridges:
+            "2768116808"
+        case .SDOTTraffic:
+            "936366064518160384"
+        }
+    }
 }
 
 extension Formatter {
